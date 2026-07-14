@@ -1,0 +1,78 @@
+name: Build examples Docker image
+
+# Rebuild and push the california-housing project image whenever its
+# inputs change. As more projects are added, this workflow should grow a
+# build-matrix entry per project (each with its own PROJECT_EXTRA build
+# arg and image tag) rather than bundling every project into one image --
+# all pipelines within one project (e.g. pytorch_lightning_train today,
+# xgboost_train later) already share this same project-level image.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "pyproject.toml"
+      - "Dockerfile"
+      - "entrypoint.sh"
+  pull_request:
+    paths:
+      - "src/**"
+      - "pyproject.toml"
+      - "Dockerfile"
+      - "entrypoint.sh"
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/michelangelo-examples
+  # Every project currently shares one image name (michelangelo-examples),
+  # so the tag itself must disambiguate which project's deps got baked in
+  # -- otherwise a second project with a different PROJECT_EXTRA would
+  # silently overwrite this one under the same :latest tag.
+  PROJECT_TAG: california-housing
+
+jobs:
+  build:
+    name: Build and push
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Extract image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=${{ env.PROJECT_TAG }}-sha-
+            type=ref,event=branch,prefix=${{ env.PROJECT_TAG }}-
+            type=raw,value=${{ env.PROJECT_TAG }},enable=${{ github.ref == 'refs/heads/main' }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          build-args: |
+            PROJECT_EXTRA=${{ env.PROJECT_TAG }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          push: ${{ github.event_name != 'pull_request' }}

@@ -9,6 +9,31 @@ authors = [
     { name = "Michelangelo maintainers" },
 ]
 
+[project.optional-dependencies]
+# One extras group per project (use case), not per pipeline: all pipelines
+# under california_housing (today: pytorch_lightning_train; future:
+# xgboost_train, etc.) share this dependency set and the same built image,
+# so pinning per-pipeline would just duplicate near-identical extras.
+# michelangelo's published wheel gates pyspark/pytorch_lightning/ray/torch
+# behind its own "example" extra, which also drags in a pile of unrelated
+# deps (xgboost, transformers, mlflow, kaggle, chronon-ai, ...). There is no
+# standalone "ray" extra. Rather than pull in "example", this project
+# declares pyspark/pytorch_lightning/ray/torch directly, matching the
+# version constraints from michelangelo's own pyproject.toml.
+california-housing = [
+    "michelangelo>=0.4.0rc1",
+    "pyspark==3.5.5",
+    "pytorch_lightning>=2.2.0,<3.0.0",
+    "ray[default,data]>=2.55.1,<3.0.0",
+    "pyarrow>=19.0.0,<20.0.0",
+    "torch>=2.0",
+    "scikit-learn>=1.3",
+    "pandas>=2.1",
+    # push.py's fsspec.core.url_to_fs() needs an S3 implementation for
+    # s3:// paths; neither michelangelo nor the above deps pull one in.
+    "s3fs>=2023.1.0",
+]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"

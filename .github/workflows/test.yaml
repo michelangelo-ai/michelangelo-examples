@@ -1,0 +1,50 @@
+name: Test
+
+# Fast lint + import/local-run smoke test on every push/PR touching this
+# project's code, gating before the (slower, GPU-base-image) Docker build
+# in build-image.yaml even starts.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "pyproject.toml"
+  pull_request:
+    paths:
+      - "src/**"
+      - "pyproject.toml"
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          python-version: "3.10"
+
+      - name: Sync dependencies (california-housing project extra)
+        run: uv sync --extra california-housing
+
+      - name: Lint (ruff)
+        run: uvx ruff check src/
+
+      - name: Import smoke test
+        run: |
+          uv run python -c "
+          from michelangelo_examples.california_housing.pipelines.pytorch_lightning_train.model import TorchRegressionModel
+          from michelangelo_examples.california_housing.pipelines.pytorch_lightning_train import pipeline, train, push, _backend
+          from michelangelo_examples.california_housing.pipelines.libs.tasks import feature_prep, preprocess
+          print('imports OK')
+          "
+
+      # Trains TorchRegressionModel locally on a small sample (no Ray/Spark/
+      # Cadence/sandbox) -- catches real breakage (model/data-shape
+      # mismatches, API drift against the pinned michelangelo release) that
+      # an import-only check would miss, while staying fast (a few seconds).
+      - name: Local pipeline smoke test
+        run: uv run python -m michelangelo_examples.california_housing.pipelines.pytorch_lightning_train
