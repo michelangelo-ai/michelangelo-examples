@@ -1,5 +1,8 @@
 # michelangelo-examples
 
+[![Test](https://github.com/michelangelo-ai/michelangelo-examples/actions/workflows/test.yaml/badge.svg)](https://github.com/michelangelo-ai/michelangelo-examples/actions/workflows/test.yaml)
+[![Build examples Docker image](https://github.com/michelangelo-ai/michelangelo-examples/actions/workflows/build-image.yaml/badge.svg)](https://github.com/michelangelo-ai/michelangelo-examples/actions/workflows/build-image.yaml)
+
 Pip-installable, ready-to-run example models and pipelines for
 [Michelangelo](https://github.com/michelangelo-ai/michelangelo) — a
 lightweight on-ramp for trying Michelangelo without a full monorepo
@@ -29,24 +32,48 @@ full pipeline reference, not a replacement for it.
 
 ## Examples
 
-*(Coming soon — v1 will port a small initial set, starting with
-`california-housing`, `movielens`, and `bert-cola`. See the
+Ported so far:
+[`california_housing`](src/michelangelo_examples/california_housing/) — a
+project (use case) with one pipeline so far,
+[`pytorch_lightning_train`](src/michelangelo_examples/california_housing/pipelines/pytorch_lightning_train/)
+(California Housing price prediction via PyTorch Lightning, migrated from
+core `michelangelo`'s
+`python/examples/pipelines/california_housing_lightning/`). Structuring it
+as a project with a `pipelines/` subfolder leaves room for sibling
+pipelines against the same use case — e.g. a future `xgboost_train`
+pipeline — without another top-level rename.
+
+v1 candidates (not yet ported): `movielens`, `bert-cola`. See the
 [project spec](https://github.com/michelangelo-ai/michelangelo/tree/main/python/examples)
-for the full list this repo is drawing from.)*
+for the full list this repo is drawing from.
 
-Each example will live under `examples/<example-name>/` with its own
-`README.md`, `model.py` (or an import from
-[`michelangelo-models`](https://github.com/michelangelo-ai/michelangelo-models)
-where applicable), and `run_local.py`.
+Each project lives entirely under
+`src/michelangelo_examples/<project-name>/` — a real subpackage of the one
+`michelangelo_examples` package this repo ships, including its
+`pipeline.yaml`/`README.md` (bundled as package data so a plain `pip
+install` gets everything, not just the Python code) alongside each
+pipeline's model/training/task code and `__main__.py` local runner. Code
+shared across a project's sibling pipelines (e.g. dataset loading/feature
+prep) lives in `<project-name>/pipelines/libs/`.
 
-## Installing an example
+## Installing a project
 
 ```bash
-pip install michelangelo-examples[california-housing]
-python -m michelangelo_examples.california_housing.run_local
+pip install "michelangelo-examples[california-housing]"
+python -m michelangelo_examples.california_housing.pipelines.pytorch_lightning_train
 ```
 
-Only that example's dependencies are installed.
+Extras are scoped per **project**, not per pipeline: installing
+`california-housing` pulls in the dependencies for every pipeline under
+that project (today just `pytorch_lightning_train`), since they already
+share one built image and mostly overlapping dependency sets.
+
+The `pip install` + `python -m` commands above run the lightweight local
+tier only. To run a pipeline's full Cadence-dispatched version against a
+Michelangelo sandbox (`ma project apply` → `ma pipeline apply` →
+`ma pipeline run`), see the end-to-end command sequence in that pipeline's
+own README — e.g.
+[`pytorch_lightning_train`'s](src/michelangelo_examples/california_housing/pipelines/pytorch_lightning_train/README.md#end-to-end-sandbox-to-running-pipeline).
 
 ## Relationship to other Michelangelo repos
 

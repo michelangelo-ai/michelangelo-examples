@@ -1,16 +1,16 @@
 apiVersion: michelangelo.api/v2
 kind: Project
 metadata:
-  name: ma-examples
-  namespace: ma-examples
+  name: california-housing
+  namespace: california-housing
 spec:
-  description: "Michelangelo Examples"
+  description: "Michelangelo California Housing Examples"
   owner:
     owningTeam: "00000000-0000-0000-0000-000000000001"
     owners:
-      - your-username
+      - michelangelo-example
     ownerGroups:
-      - your-team
+      - michelangelo-example
   tier: 4
   gitRepo: https://github.com/michelangelo-ai/michelangelo-examples
-  rootDir: examples
+  rootDir: src/michelangelo_examples/california_housing
