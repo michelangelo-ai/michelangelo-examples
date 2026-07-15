@@ -21,7 +21,10 @@ authors = [
 # declares pyspark/pytorch_lightning/ray/torch directly, matching the
 # version constraints from michelangelo's own pyproject.toml.
 california-housing = [
-    "michelangelo>=0.4.0rc1",
+    # >=0.4.0rc2, not rc1: rc2 fixes RayTrainReportCallback.local_rank being
+    # referenced but never assigned (github.com/michelangelo-ai/michelangelo
+    # issue #1518), which blocked the train step under rc1.
+    "michelangelo>=0.4.0rc2",
     "pyspark==3.5.5",
     "pytorch_lightning>=2.2.0,<3.0.0",
     "ray[default,data]>=2.55.1,<3.0.0",
@@ -32,6 +35,17 @@ california-housing = [
     # push.py's fsspec.core.url_to_fs() needs an S3 implementation for
     # s3:// paths; neither michelangelo nor the above deps pull one in.
     "s3fs>=2023.1.0",
+    # _backend.py's resolve_storage_backend() uses michelangelo's
+    # MinioStorageBackend whenever AWS_ENDPOINT_URL is set (i.e. any
+    # sandbox/prod run against MinIO or S3-compatible storage). michelangelo
+    # gates the 'minio' package behind its own "minio"/"example" extras
+    # rather than declaring it as a core dependency.
+    # TODO(upstream, https://github.com/michelangelo-ai/michelangelo/issues/672):
+    # MinIO community edition is unmaintained/archived (AGPL, no more security
+    # patches). Drop this once michelangelo's MinioStorageBackend is replaced
+    # or made pluggable for an actively-maintained S3-compatible backend
+    # (e.g. SeaweedFS/RustFS).
+    "minio>=7.2,<8",
 ]
 
 [build-system]
