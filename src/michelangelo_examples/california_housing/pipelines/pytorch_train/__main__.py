@@ -8,7 +8,7 @@ push_step, dispatched through Cadence via Uniflow), see ``pipeline.py`` and
 ``pipeline.yaml`` in this same package.
 
 Usage:
-    python -m michelangelo_examples.california_housing.pipelines.pytorch_lightning_train
+    python -m michelangelo_examples.california_housing.pipelines.pytorch_train
 """
 
 from __future__ import annotations
@@ -21,7 +21,7 @@ from sklearn.datasets import fetch_california_housing
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader, Dataset
 
-from michelangelo_examples.california_housing.pipelines.pytorch_lightning_train.model import TorchRegressionModel
+from michelangelo_examples.california_housing.pipelines.pytorch_train.model import TorchRegressionModel
 
 log = logging.getLogger(__name__)
 

@@ -35,7 +35,7 @@ full pipeline reference, not a replacement for it.
 Ported so far:
 [`california_housing`](src/michelangelo_examples/california_housing/) — a
 project (use case) with one pipeline so far,
-[`pytorch_lightning_train`](src/michelangelo_examples/california_housing/pipelines/pytorch_lightning_train/)
+[`pytorch_train`](src/michelangelo_examples/california_housing/pipelines/pytorch_train/)
 (California Housing price prediction via PyTorch Lightning, migrated from
 core `michelangelo`'s
 `python/examples/pipelines/california_housing_lightning/`). Structuring it
@@ -60,12 +60,12 @@ prep) lives in `<project-name>/pipelines/libs/`.
 
 ```bash
 pip install "michelangelo-examples[california-housing]"
-python -m michelangelo_examples.california_housing.pipelines.pytorch_lightning_train
+python -m michelangelo_examples.california_housing.pipelines.pytorch_train
 ```
 
 Extras are scoped per **project**, not per pipeline: installing
 `california-housing` pulls in the dependencies for every pipeline under
-that project (today just `pytorch_lightning_train`), since they already
+that project (today just `pytorch_train`), since they already
 share one built image and mostly overlapping dependency sets.
 
 The `pip install` + `python -m` commands above run the lightweight local
@@ -73,7 +73,7 @@ tier only. To run a pipeline's full Cadence-dispatched version against a
 Michelangelo sandbox (`ma project apply` → `ma pipeline apply` →
 `ma pipeline run`), see the end-to-end command sequence in that pipeline's
 own README — e.g.
-[`pytorch_lightning_train`'s](src/michelangelo_examples/california_housing/pipelines/pytorch_lightning_train/README.md#end-to-end-sandbox-to-running-pipeline).
+[`pytorch_train`'s](src/michelangelo_examples/california_housing/pipelines/pytorch_train/README.md#end-to-end-sandbox-to-running-pipeline).
 
 ## Relationship to other Michelangelo repos
 

@@ -72,7 +72,7 @@ def train(
     config = TabularTrainerConfig(
         lightning=LightningTrainerConfig(
             model_class=(
-                "michelangelo_examples.california_housing.pipelines.pytorch_lightning_train.model."
+                "michelangelo_examples.california_housing.pipelines.pytorch_train.model."
                 "TorchRegressionModel"
             ),
             model_kwargs={
