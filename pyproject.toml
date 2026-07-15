@@ -40,6 +40,11 @@ california-housing = [
     # sandbox/prod run against MinIO or S3-compatible storage). michelangelo
     # gates the 'minio' package behind its own "minio"/"example" extras
     # rather than declaring it as a core dependency.
+    # TODO(upstream, https://github.com/michelangelo-ai/michelangelo/issues/672):
+    # MinIO community edition is unmaintained/archived (AGPL, no more security
+    # patches). Drop this once michelangelo's MinioStorageBackend is replaced
+    # or made pluggable for an actively-maintained S3-compatible backend
+    # (e.g. SeaweedFS/RustFS).
     "minio>=7.2,<8",
 ]
 
