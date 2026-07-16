@@ -1,8 +1,8 @@
-"""Shared storage-backend resolution for the ``train`` and ``push_step`` tasks.
+"""Shared storage-backend resolution for the ``train`` and ``push`` tasks.
 
 Both tasks in this workflow select a storage backend the same way:
 ``AWS_ENDPOINT_URL`` set -> MinIO/S3-compatible remote storage; unset -> a
-local temp directory (development and CI). ``train`` and ``push_step`` run
+local temp directory (development and CI). ``train`` and ``push`` run
 in separate Ray/Spark worker processes and can't share a live config object
 at runtime, so this module only shares the *resolution logic*, not a shared
 instance -- each task calls ``resolve_storage_backend()`` independently.

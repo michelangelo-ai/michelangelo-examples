@@ -4,7 +4,7 @@ No Ray, no Spark, no Cadence, no Michelangelo sandbox required -- this is
 the lightweight tier described in the michelangelo-examples README: a fast
 way to see ``TorchRegressionModel`` train and evaluate on a laptop. For the
 full, production-shaped pipeline (feature_prep -> preprocess -> train ->
-push_step, dispatched through Cadence via Uniflow), see ``pipeline.py`` and
+assembler -> push, dispatched through Cadence via Uniflow), see ``pipeline.py`` and
 ``pipeline.yaml`` in this same package.
 
 Usage:

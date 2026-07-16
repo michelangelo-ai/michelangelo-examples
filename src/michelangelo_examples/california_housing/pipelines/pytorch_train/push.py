@@ -1,12 +1,9 @@
 """Pusher step for the California Housing Lightning workflow.
 
-Pushes the trained model and preprocessed train/validation datasets to
-storage and registry in a single Spark task. ``train_tabular()`` hands off
-its trained model as an intra-pipeline ``ModelVariable`` (there is no OSS
-"assembler" task yet to package it into a registry-ready ``ModelArtifact``),
-so ``push_step`` does that conversion itself (download the state-dict file,
-wrap it as a local ``ModelArtifact``) before handing off to the shared
-``ModelPusherPlugin``.
+Pushes the assembled model and preprocessed train/validation datasets to
+storage and registry in a single Spark task. ``assembler`` packages the
+trained model into a registry-ready ``AssembledModel`` upstream, so this task
+only handles pushing -- no model-format conversion here.
 
 Unlike xgb's ``TrainResult``, ``train_tabular()`` does not return training
 metrics (no eval-metrics dict), so this pusher omits the ``eval_report``
@@ -29,22 +26,18 @@ from michelangelo.workflow.schema.pusher import (
     PusherConfig,
     PusherPluginConfig,
 )
-from michelangelo.workflow.tasks.pusher import push
-from michelangelo.workflow.variables.types import (
-    AssembledModel,
-    ModelArtifact,
-    PusherResult,
-)
+from michelangelo.workflow.tasks.pusher import push as _push
+from michelangelo.workflow.variables.types import PusherResult
 
 if TYPE_CHECKING:
     from michelangelo_examples.california_housing.pipelines.libs.tasks.preprocess import (
         PreprocessResult,
     )
-    from michelangelo.workflow.variables import ModelVariable
+    from michelangelo.workflow.variables.types import AssembledModel
 
 log = logging.getLogger(__name__)
 
-__all__ = ["push_step"]
+__all__ = ["push"]
 
 
 @uniflow.task(
@@ -56,53 +49,35 @@ __all__ = ["push_step"]
         executor_instances=1,
     ),
 )
-def push_step(
+def push(
     pr: PreprocessResult,
-    model_variable: ModelVariable,
+    assembled_model: AssembledModel,
 ) -> list[PusherResult]:
-    """Push the trained model and preprocessed datasets in a single Spark step.
+    """Push the assembled model and preprocessed datasets in a single Spark step.
 
     Pushes three artifacts using a single storage backend selected at runtime:
 
-    - **model** -- the Lightning checkpoint, converted from the
-      intra-pipeline ``ModelVariable`` returned by ``train_tabular()`` into a
-      local ``ModelArtifact``, via ``ModelPusherPlugin``.
+    - **model** -- the already-packaged ``AssembledModel`` from
+      ``assembler``, via ``ModelPusherPlugin``.
     - **train_data** / **validation_data** -- preprocessed datasets via
       ``DatasetPusherPlugin`` + ``S3Sink`` (remote) or ``LocalFileSink`` (local/CI).
 
     Args:
         pr: Result of the ``preprocess`` task, holding preprocessed training
             and validation ``DatasetVariable`` handles.
-        model_variable: Result of the ``train`` task -- a ``ModelVariable``
-            wrapping the trained Lightning model, persisted under
-            ``UF_STORAGE_URL``.
+        assembled_model: Result of the ``assembler`` task -- a
+            registry-ready ``AssembledModel`` wrapping the packaged
+            deployable and raw Triton packages.
 
     Returns:
         List of ``PusherResult``, one per artifact pushed.
     """
     import os
-    import tempfile
-
-    import fsspec
+    import uuid
 
     storage_backend, is_remote = resolve_storage_backend("california_lightning_push_")
 
-    _run_id = os.path.basename(model_variable.path.rstrip("/"))
-
-    # train_tabular() no longer packages/uploads the model itself -- it hands
-    # off an intra-pipeline ModelVariable persisted under UF_STORAGE_URL, and
-    # there is no OSS "assembler" task yet to turn that into a registry-ready
-    # ModelArtifact. Pull the state-dict file it already wrote (via
-    # save_lightning_model()) down to local disk with the same fsspec
-    # mechanism ModelVariable itself uses, then wrap it as a ModelArtifact --
-    # the local-file contract ModelPusherPlugin expects.
-    local_model_dir = tempfile.mkdtemp(prefix="california_lightning_push_model_")
-    local_model_path = os.path.join(local_model_dir, "model.pt")
-    fs, remote_model_path = fsspec.core.url_to_fs(model_variable.path)
-    fs.get(remote_model_path, local_model_path)
-    model_artifact = ModelArtifact(
-        path=local_model_path, metadata=model_variable.metadata
-    )
+    _run_id = uuid.uuid4().hex
 
     pr.train_data.load_pandas_dataframe()
     pr.validation_data.load_pandas_dataframe()
@@ -156,7 +131,7 @@ def push_step(
                 "REGISTRY_NAMESPACE", os.environ.get("MA_NAMESPACE", "default")
             ),
         )
-        log.info("push_step: using APIRegistryClient at %s", registry_endpoint)
+        log.info("push: using APIRegistryClient at %s", registry_endpoint)
     else:
         from michelangelo.lib.model_manager.registry.client import (
             InMemoryRegistryClient,
@@ -195,12 +170,10 @@ def push_step(
         ]
     )
 
-    assembled = AssembledModel(raw_model=model_artifact)
-
-    results = push(
+    results = _push(
         config=config,
         artifacts={
-            "model": assembled,
+            "model": assembled_model,
             "train_data": pr.train_data,
             "validation_data": pr.validation_data,
         },

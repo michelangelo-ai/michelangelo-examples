@@ -65,9 +65,11 @@ def train(
         ``UF_STORAGE_URL`` and, for its own distributed checkpointing on a
         multi-node cluster, defaults ``run_config`` to the same location via
         ``michelangelo.uniflow.plugins.ray.run_config.create_run_config()`` --
-        no manual storage-backend or RunConfig plumbing needed here. There is
-        no OSS "assembler" task yet to turn this into a registry-ready
-        ``ModelArtifact``, so ``push_step`` does that conversion itself.
+        no manual storage-backend or RunConfig plumbing needed here. Its
+        metadata is already populated with everything the downstream
+        ``assembler`` task needs (training framework, model class,
+        hyperparameters, schema, sample data) to package this into a
+        registry-ready ``ModelArtifact``.
     """
     config = TabularTrainerConfig(
         lightning=LightningTrainerConfig(

@@ -15,16 +15,20 @@ from michelangelo_examples.california_housing.pipelines.libs.tasks.preprocess im
     PreprocessResult,
     preprocess,
 )
-from michelangelo_examples.california_housing.pipelines.pytorch_train.push import push_step
+from michelangelo_examples.california_housing.pipelines.pytorch_train.assemble import (
+    assembler,
+)
+from michelangelo_examples.california_housing.pipelines.pytorch_train.push import push
 from michelangelo_examples.california_housing.pipelines.pytorch_train.train import train
 from michelangelo.uniflow.plugins.ray import RayTask
 from michelangelo.uniflow.plugins.spark import SparkTask
 
 __all__ = [
     "PreprocessResult",
+    "assembler",
     "feature_prep",
     "preprocess",
-    "push_step",
+    "push",
     "train",
     "train_workflow",
 ]
@@ -52,7 +56,7 @@ def train_workflow(
             features and target.
 
     Returns:
-        List of PusherResult from push_step, one per artifact pushed.
+        List of PusherResult from push, one per artifact pushed.
     """
     _dataset_cols = dataset_cols.split(",")
     feature_prep_overrides = feature_prep.with_overrides(
@@ -73,11 +77,12 @@ def train_workflow(
         train_dv=train_dv,
         validation_dv=validation_dv,
     )
-    model_artifact = train(
+    model_variable = train(
         pr,
         feature_columns=_dataset_cols[:-1],
     )
-    return push_step(pr, model_artifact)
+    assembled_model = assembler(model_variable)
+    return push(pr, assembled_model)
 
 
 if __name__ == "__main__":

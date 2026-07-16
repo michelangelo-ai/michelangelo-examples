@@ -29,8 +29,8 @@ python -m michelangelo_examples.california_housing.pipelines.pytorch_train
 ## Full pipeline
 
 ```
-feature_prep  →  preprocess  →  train  →  push_step
-   (Ray)           (Spark)      (Ray)      (Spark)
+feature_prep  →  preprocess  →  train  →  assembler  →  push
+   (Ray)           (Spark)      (Ray)       (Ray)       (Spark)
 ```
 
 | Step | File | Runtime | Description |
@@ -38,7 +38,8 @@ feature_prep  →  preprocess  →  train  →  push_step
 | `feature_prep` | `feature_prep.py` | Ray | Load dataset, train/test split, Ray Datasets |
 | `preprocess` | `preprocess.py` | Spark | Cast columns to float |
 | `train` | `train.py` | Ray | Distributed Lightning training via `tabular_trainer.train_tabular()` |
-| `push_step` | `push.py` | Spark | Push model and preprocessed datasets to storage/registry |
+| `assembler` | `assemble.py` | Ray | Package the trained model into a registry-ready `AssembledModel` via `tabular_assembler` |
+| `push` | `push.py` | Spark | Push model and preprocessed datasets to storage/registry |
 
 ### Prerequisites
 
@@ -86,11 +87,13 @@ This example's `train.py` is a thin `@uniflow.task` wrapper around
 `michelangelo.workflow.tasks.tabular_trainer.task.train_tabular()` — the
 shared Lightning + Ray Train dispatcher. `train_tabular()` builds its own
 multi-node-safe `RunConfig` internally and returns a `ModelVariable`
-pointing at the uploaded checkpoint, rather than a raw checkpoint path or an
-assembled `ModelArtifact`. `push.py` downloads that checkpoint locally (via
-`fsspec.core.url_to_fs()`) and wraps it in a `ModelArtifact` before handing
-it to `ModelPusherPlugin`, since no OSS "packager" task exists yet to do
-that conversion automatically.
+pointing at the uploaded checkpoint, with metadata already populated
+(training framework, model class, hyperparameters, schema, sample data).
+`assemble.py`'s `assembler` task hands that `ModelVariable` to
+`michelangelo.workflow.tasks.tabular_assembler.task.tabular_assembler()`,
+which packages it into a registry-ready `AssembledModel` (a Triton
+package for PyTorch/Lightning models); `push.py` then pushes that
+`AssembledModel` as-is, with no model-format conversion of its own.
 
 ### `TorchRegressionModel` — the model to plug in
 
@@ -122,7 +125,7 @@ k3d sandbox's CPU-only nodes.
 
 ### No eval report
 
-Unlike some other examples' `push_step`, this example's pusher does not push
+Unlike some other examples' `push`, this example's pusher does not push
 an `eval_report` artifact: `train_tabular()` returns a `ModelArtifact`
 without a training-metrics dict, so there is nothing meaningful to report.
 
