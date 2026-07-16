@@ -6,7 +6,7 @@ released [`michelangelo`](https://pypi.org/project/michelangelo/) PyPI
 package — no core `michelangelo` monorepo checkout required.
 
 Part of the `california_housing` project (use case); this is its
-`pytorch_lightning_train` pipeline. A sibling `xgboost_train` pipeline may
+`pytorch_train` pipeline. A sibling `xgboost_train` pipeline may
 be added later under the same project.
 
 Two ways to run this pipeline:
@@ -23,7 +23,7 @@ Two ways to run this pipeline:
 
 ```bash
 pip install "michelangelo-examples[california-housing]"
-python -m michelangelo_examples.california_housing.pipelines.pytorch_lightning_train
+python -m michelangelo_examples.california_housing.pipelines.pytorch_train
 ```
 
 ## Full pipeline
@@ -63,11 +63,11 @@ ma sandbox create
 # 2. Register the california-housing project (namespace: california-housing)
 ma project apply -f src/michelangelo_examples/california_housing/config/project.yaml
 
-# 3. Register this pipeline (namespace: california-housing, name: pytorch-lightning-train)
-ma pipeline apply -f src/michelangelo_examples/california_housing/pipelines/pytorch_lightning_train/pipeline.yaml
+# 3. Register this pipeline (namespace: california-housing, name: pytorch-train)
+ma pipeline apply -f src/michelangelo_examples/california_housing/pipelines/pytorch_train/pipeline.yaml
 
 # 4. Run it
-ma pipeline run -n california-housing --name pytorch-lightning-train
+ma pipeline run -n california-housing --name pytorch-train
 ```
 
 `ma pipeline run` dispatches through Cadence using the image already
@@ -134,7 +134,7 @@ reaching remote workers. Shell `export` statements before the command only
 affect the local launcher and do not propagate.
 
 ```bash
-python -m michelangelo_examples.california_housing.pipelines.pytorch_lightning_train.pipeline \
+python -m michelangelo_examples.california_housing.pipelines.pytorch_train.pipeline \
   remote-run \
   --image ghcr.io/michelangelo-ai/michelangelo-examples:california-housing \
   --storage-url s3://your-bucket/workflows \
@@ -148,7 +148,7 @@ python -m michelangelo_examples.california_housing.pipelines.pytorch_lightning_t
 ### k3d sandbox
 
 ```bash
-python -m michelangelo_examples.california_housing.pipelines.pytorch_lightning_train.pipeline \
+python -m michelangelo_examples.california_housing.pipelines.pytorch_train.pipeline \
   remote-run \
   --image ghcr.io/michelangelo-ai/michelangelo-examples:california-housing \
   --storage-url s3://michelangelo/workflows \

@@ -15,8 +15,8 @@ from michelangelo_examples.california_housing.pipelines.libs.tasks.preprocess im
     PreprocessResult,
     preprocess,
 )
-from michelangelo_examples.california_housing.pipelines.pytorch_lightning_train.push import push_step
-from michelangelo_examples.california_housing.pipelines.pytorch_lightning_train.train import train
+from michelangelo_examples.california_housing.pipelines.pytorch_train.push import push_step
+from michelangelo_examples.california_housing.pipelines.pytorch_train.train import train
 from michelangelo.uniflow.plugins.ray import RayTask
 from michelangelo.uniflow.plugins.spark import SparkTask
 

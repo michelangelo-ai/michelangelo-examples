@@ -19,7 +19,7 @@ import logging
 from typing import TYPE_CHECKING
 
 import michelangelo.uniflow.core as uniflow
-from michelangelo_examples.california_housing.pipelines.pytorch_lightning_train._backend import (
+from michelangelo_examples.california_housing.pipelines.pytorch_train._backend import (
     resolve_storage_backend,
 )
 from michelangelo.uniflow.plugins.spark import SparkTask

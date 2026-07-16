@@ -11,7 +11,7 @@ authors = [
 
 [project.optional-dependencies]
 # One extras group per project (use case), not per pipeline: all pipelines
-# under california_housing (today: pytorch_lightning_train; future:
+# under california_housing (today: pytorch_train; future:
 # xgboost_train, etc.) share this dependency set and the same built image,
 # so pinning per-pipeline would just duplicate near-identical extras.
 # michelangelo's published wheel gates pyspark/pytorch_lightning/ray/torch

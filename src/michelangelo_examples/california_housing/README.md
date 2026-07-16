@@ -10,7 +10,7 @@ applied together via this project's own
 
 ## Pipelines
 
-- [`pytorch_lightning_train`](pipelines/pytorch_lightning_train/) —
+- [`pytorch_train`](pipelines/pytorch_train/) —
   PyTorch Lightning regression via `tabular_trainer`, migrated from core
   `michelangelo`'s
   `python/examples/pipelines/california_housing_lightning/`. See its own

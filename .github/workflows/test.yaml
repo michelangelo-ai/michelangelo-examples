@@ -36,8 +36,8 @@ jobs:
       - name: Import smoke test
         run: |
           uv run python -c "
-          from michelangelo_examples.california_housing.pipelines.pytorch_lightning_train.model import TorchRegressionModel
-          from michelangelo_examples.california_housing.pipelines.pytorch_lightning_train import pipeline, train, push, _backend
+          from michelangelo_examples.california_housing.pipelines.pytorch_train.model import TorchRegressionModel
+          from michelangelo_examples.california_housing.pipelines.pytorch_train import pipeline, train, push, _backend
           from michelangelo_examples.california_housing.pipelines.libs.tasks import feature_prep, preprocess
           print('imports OK')
           "
@@ -47,4 +47,4 @@ jobs:
       # mismatches, API drift against the pinned michelangelo release) that
       # an import-only check would miss, while staying fast (a few seconds).
       - name: Local pipeline smoke test
-        run: uv run python -m michelangelo_examples.california_housing.pipelines.pytorch_lightning_train
+        run: uv run python -m michelangelo_examples.california_housing.pipelines.pytorch_train

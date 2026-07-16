@@ -4,7 +4,7 @@ name: Build examples Docker image
 # inputs change. As more projects are added, this workflow should grow a
 # build-matrix entry per project (each with its own PROJECT_EXTRA build
 # arg and image tag) rather than bundling every project into one image --
-# all pipelines within one project (e.g. pytorch_lightning_train today,
+# all pipelines within one project (e.g. pytorch_train today,
 # xgboost_train later) already share this same project-level image.
 on:
   push:
