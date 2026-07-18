@@ -91,9 +91,8 @@ detecting GPU availability automatically.
 
 ```bash
 # Build and import the project image
-docker build -t michelangelo-examples:california-housing \
-  -f Dockerfile --build-arg PROJECT=california-housing .
-k3d image import michelangelo-examples:california-housing -c michelangelo-sandbox
+docker build -t michelangelo-examples:local .
+k3d image import michelangelo-examples:local -c michelangelo-sandbox
 
 # Create the project (if not already created)
 ma project apply -f src/michelangelo_examples/california_housing/config/project.yaml
