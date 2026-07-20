@@ -72,59 +72,30 @@ def push_step(
     Returns:
         List of ``PusherResult``, one per artifact pushed.
     """
-    import glob
     import os
     import tempfile
 
+    import fsspec
+
     storage_backend, is_remote = resolve_storage_backend("california_xgb_push_")
 
-    if is_remote:
-        s3_endpoint = os.environ.get("AWS_ENDPOINT_URL", "")
-        from urllib.parse import urlparse
-
-        parsed = urlparse(s3_endpoint)
-        endpoint = parsed.netloc
-        secure = parsed.scheme == "https"
-        access_key = os.environ.get("AWS_ACCESS_KEY_ID", "")
-        secret_key = os.environ.get("AWS_SECRET_ACCESS_KEY", "")
-
     # ── Locate XGBoost checkpoint ────────────────────────────────────────────
+    # train_result.path is a directory (Ray's XGBoostTrainer run directory),
+    # local or s3://. fsspec's url_to_fs() picks the right filesystem
+    # (LocalFileSystem or s3fs, using the same AWS_* env vars s3fs already
+    # reads elsewhere in this pipeline) so both cases share one glob/get
+    # call instead of branching between a raw Minio client and glob.glob().
     raw_path = train_result.path
-    if is_remote:
-        from minio import Minio
+    fs, fs_path = fsspec.core.url_to_fs(raw_path)
+    matches = fs.glob(f"{fs_path}/**/model.ubj")
+    if not matches:
+        matches = [p for p in fs.glob(f"{fs_path}/**/*") if fs.isfile(p)]
+    if not matches:
+        raise FileNotFoundError(f"No model checkpoint found under {raw_path}")
 
-        _mc = Minio(
-            endpoint,
-            access_key=access_key,
-            secret_key=secret_key,
-            secure=secure,
-        )
-        s3_path = raw_path.removeprefix("s3://")
-        bucket, _, prefix = s3_path.partition("/")
-
-        objects = list(_mc.list_objects(bucket, prefix=prefix, recursive=True))
-        ubj_objects = [o for o in objects if o.object_name.endswith("model.ubj")]
-        if not ubj_objects:
-            ubj_objects = [o for o in objects if not o.is_dir]
-        if not ubj_objects:
-            raise FileNotFoundError(
-                f"No model checkpoint found in s3://{bucket}/{prefix}"
-            )
-        tmp_ckpt_dir = tempfile.mkdtemp(prefix="checkpoint_")
-        checkpoint_path = os.path.join(tmp_ckpt_dir, "model.ubj")
-        _mc.fget_object(bucket, ubj_objects[0].object_name, checkpoint_path)
-    else:
-        checkpoint_glob = os.path.join(raw_path, "**", "model.ubj")
-        matches = glob.glob(checkpoint_glob, recursive=True)
-        if not matches:
-            matches = [
-                p
-                for p in glob.glob(os.path.join(raw_path, "**", "*"), recursive=True)
-                if os.path.isfile(p)
-            ]
-        if not matches:
-            raise FileNotFoundError(f"No model checkpoint found under {raw_path}")
-        checkpoint_path = matches[0]
+    tmp_ckpt_dir = tempfile.mkdtemp(prefix="checkpoint_")
+    checkpoint_path = os.path.join(tmp_ckpt_dir, "model.ubj")
+    fs.get(matches[0], checkpoint_path)
     log.info("Found model checkpoint: %s", checkpoint_path)
 
     _run_id = os.path.basename(train_result.path)
