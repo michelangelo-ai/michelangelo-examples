@@ -6,8 +6,8 @@ released [`michelangelo`](https://pypi.org/project/michelangelo/) PyPI
 package — no core `michelangelo` monorepo checkout required.
 
 Part of the `california_housing` project (use case); this is its
-`pytorch_train` pipeline. A sibling `xgboost_train` pipeline may
-be added later under the same project.
+`pytorch_train` pipeline. For the XGBoost variant, see
+[`xgb_train/`](../xgb_train/README.md).
 
 Two ways to run this pipeline:
 

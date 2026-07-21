@@ -46,6 +46,8 @@ california-housing = [
     # or made pluggable for an actively-maintained S3-compatible backend
     # (e.g. SeaweedFS/RustFS).
     "minio>=7.2,<8",
+    "xgboost>=2.0,<4",
+    "xgboost_ray>=0.1.19,<1",
 ]
 
 [build-system]
