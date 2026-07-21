@@ -22,10 +22,7 @@ authors = [
 # version constraints from michelangelo's own pyproject.toml.
 california-housing = [
     # >=0.5.0: floor kept current with michelangelo's latest release via the
-    # scheduled bump-michelangelo-pin.yml drift check (see spec 055 in the
-    # ma-oss-release harness repo). Previously pinned to 0.4.0rc2 (rc2, not
-    # rc1: fixed RayTrainReportCallback.local_rank being referenced but never
-    # assigned, github.com/michelangelo-ai/michelangelo issue #1518).
+    # scheduled bump-michelangelo-pin.yml drift check.
     "michelangelo>=0.5.0",
     "pyspark==3.5.5",
     "pytorch_lightning>=2.2.0,<3.0.0",
