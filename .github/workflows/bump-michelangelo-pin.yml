@@ -60,7 +60,7 @@ jobs:
         if: steps.compare.outputs.newer == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.CR_PAT }}
           commit-message: "chore: bump michelangelo floor to ${{ steps.versions.outputs.latest }}"
           title: "chore: bump michelangelo floor to ${{ steps.versions.outputs.latest }}"
           body: |
