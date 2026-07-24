@@ -31,7 +31,7 @@ jobs:
         run: uv sync --extra california-housing
 
       - name: Lint (ruff)
-        run: uvx ruff check src/
+        run: uvx ruff@0.15.16 check src/
 
       - name: Import smoke test
         run: |
