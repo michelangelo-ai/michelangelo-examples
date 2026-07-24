@@ -85,7 +85,18 @@ def push_step(
     # (LocalFileSystem or s3fs, using the same AWS_* env vars s3fs already
     # reads elsewhere in this pipeline) so both cases share one glob/get
     # call instead of branching between a raw Minio client and glob.glob().
+    #
+    # Ray's Result.path is deliberately scheme-less even for remote/cloud
+    # storage (e.g. "default/ray_results/run-..." for storage_path
+    # "s3://default/ray_results") -- Ray expects callers to pair it with
+    # result.filesystem rather than treat it as a URI. Re-qualify it with
+    # the scheme our own resolve_storage_backend() already determined,
+    # otherwise fsspec.core.url_to_fs() defaults to LocalFileSystem and
+    # looks for the checkpoint on the Spark driver's local disk, where it
+    # was never written.
     raw_path = train_result.path
+    if is_remote and "://" not in raw_path:
+        raw_path = f"s3://{raw_path}"
     fs, fs_path = fsspec.core.url_to_fs(raw_path)
     matches = fs.glob(f"{fs_path}/**/model.ubj")
     if not matches:
