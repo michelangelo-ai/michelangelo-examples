@@ -19,9 +19,6 @@ import logging
 from typing import TYPE_CHECKING
 
 import michelangelo.uniflow.core as uniflow
-from michelangelo_examples.california_housing.pipelines.pytorch_train._backend import (
-    resolve_storage_backend,
-)
 from michelangelo.uniflow.plugins.spark import SparkTask
 from michelangelo.workflow.schema.pusher import (
     DatasetPluginConfig,
@@ -36,11 +33,16 @@ from michelangelo.workflow.variables.types import (
     PusherResult,
 )
 
+from michelangelo_examples.california_housing.pipelines.pytorch_train._backend import (
+    resolve_storage_backend,
+)
+
 if TYPE_CHECKING:
+    from michelangelo.workflow.variables import ModelVariable
+
     from michelangelo_examples.california_housing.pipelines.libs.tasks.preprocess import (
         PreprocessResult,
     )
-    from michelangelo.workflow.variables import ModelVariable
 
 log = logging.getLogger(__name__)
 
@@ -135,7 +137,6 @@ def push_step(
     registry_endpoint = os.environ.get("REGISTRY_ENDPOINT")
     if registry_endpoint:
         import grpc as _grpc
-
         from michelangelo.api.v2 import APIClient
         from michelangelo.lib.model_manager.registry.api_client import APIRegistryClient
 
