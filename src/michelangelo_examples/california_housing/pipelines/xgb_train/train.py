@@ -17,7 +17,9 @@ from michelangelo.uniflow.plugins.ray import RayTask
 if TYPE_CHECKING:
     import ray.data
 
-    from michelangelo_examples.california_housing.pipelines.libs.tasks.preprocess import PreprocessResult
+    from michelangelo_examples.california_housing.pipelines.libs.tasks.preprocess import (
+        PreprocessResult,
+    )
 
 log = logging.getLogger(__name__)
 

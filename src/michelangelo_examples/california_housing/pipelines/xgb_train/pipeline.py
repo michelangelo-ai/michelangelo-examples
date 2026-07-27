@@ -9,15 +9,21 @@ preprocessed datasets to storage and registry.
 from __future__ import annotations
 
 import michelangelo.uniflow.core as uniflow
-from michelangelo_examples.california_housing.pipelines.libs.tasks.feature_prep import feature_prep
+from michelangelo.uniflow.plugins.ray import RayTask
+from michelangelo.uniflow.plugins.spark import SparkTask
+
+from michelangelo_examples.california_housing.pipelines.libs.tasks.feature_prep import (
+    feature_prep,
+)
 from michelangelo_examples.california_housing.pipelines.libs.tasks.preprocess import (
     PreprocessResult,
     preprocess,
 )
 from michelangelo_examples.california_housing.pipelines.xgb_train.push import push_step
-from michelangelo_examples.california_housing.pipelines.xgb_train.train import TrainResult, train
-from michelangelo.uniflow.plugins.ray import RayTask
-from michelangelo.uniflow.plugins.spark import SparkTask
+from michelangelo_examples.california_housing.pipelines.xgb_train.train import (
+    TrainResult,
+    train,
+)
 
 __all__ = [
     "PreprocessResult",
