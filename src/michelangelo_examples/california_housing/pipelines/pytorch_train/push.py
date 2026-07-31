@@ -174,7 +174,6 @@ def push_step(
             PusherPluginConfig(
                 name="model",
                 model_plugin=ModelPluginConfig(
-                    model_name="california-housing-lightning",
                     description=(
                         "PyTorch Lightning regression on California Housing dataset"
                     ),

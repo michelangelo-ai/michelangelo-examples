@@ -194,7 +194,6 @@ def push_step(
             PusherPluginConfig(
                 name="model",
                 model_plugin=ModelPluginConfig(
-                    model_name="california-housing-xgb",
                     description="XGBoost regression on California Housing dataset",
                     labels={"framework": "xgboost"},
                     metadata=metrics,
@@ -203,7 +202,6 @@ def push_step(
             PusherPluginConfig(
                 name="eval_report",
                 eval_report_plugin=EvalReportPluginConfig(
-                    report_name="california-housing-xgb-eval",
                     extra_fields=metrics,
                 ),
             ),
