@@ -19,6 +19,7 @@ import logging
 from typing import TYPE_CHECKING
 
 import michelangelo.uniflow.core as uniflow
+from michelangelo.lib.model_manager.constants import ModelKind
 from michelangelo.uniflow.plugins.spark import SparkTask
 from michelangelo.workflow.schema.pusher import (
     DatasetPluginConfig,
@@ -174,9 +175,8 @@ def push_step(
             PusherPluginConfig(
                 name="model",
                 model_plugin=ModelPluginConfig(
-                    description=(
-                        "PyTorch Lightning regression on California Housing dataset"
-                    ),
+                    description="PyTorch Lightning regression on California Housing dataset",
+                    kind=ModelKind.REGRESSION,
                     labels={"framework": "pytorch_lightning"},
                 ),
             ),
