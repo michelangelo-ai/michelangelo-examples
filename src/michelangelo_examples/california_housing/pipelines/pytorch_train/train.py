@@ -81,16 +81,14 @@ def train(
                 "label_column": LABEL_COLUMN,
             },
             input_columns={
-                c: ColumnConfig("torch.float32") for c in feature_columns
+                c: ColumnConfig("torch.float32", shape=[]) for c in feature_columns
             },
-            output_columns={"prediction": ColumnConfig("torch.float32")},
-            labels={LABEL_COLUMN: ColumnConfig("torch.float32")},
+            output_columns={"prediction": ColumnConfig("torch.float32", shape=[])},
+            labels={LABEL_COLUMN: ColumnConfig("torch.float32", shape=[])},
             metadata_columns=[],
             scaling_config=ScalingConfig(cpu_per_worker=1),
             dataloading_config=DataloadingConfig(
-                batch_iter_config=BatchIterConfig(
-                    batch_size=64, num_shuffle_batches=1
-                )
+                batch_iter_config=BatchIterConfig(batch_size=64, num_shuffle_batches=1)
             ),
             # precision explicitly forced to "32" rather than relying on the
             # dispatcher's "bf16-mixed" default: verified locally that
