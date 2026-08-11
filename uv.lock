@@ -1171,7 +1171,7 @@ wheels = [
 
 [[package]]
 name = "michelangelo"
-version = "0.4.0rc2"
+version = "0.8.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "fsspec" },
@@ -1188,12 +1188,12 @@ dependencies = [
     { name = "typing-extensions" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/3f/8f/61c9384effc15503b49822eca36ef633030a4d1aa8f369d6cd222e7cebe2/michelangelo-0.4.0rc2-py3-none-any.whl", hash = "sha256:4d50b4271d7830ed682b46f60fd87065da7f3dff59bcb78fbe56983527e0b5c9", size = 18856294, upload-time = "2026-07-14T21:59:49.287Z" },
+    { url = "https://files.pythonhosted.org/packages/3e/75/4ade0dd3c6dd4bee420f2f3a1d45e88fdf9e0f014496cd0d701e16e8bb5c/michelangelo-0.8.0-py3-none-any.whl", hash = "sha256:7d56111b338a52b35ff22eaabacd238e5808e80855b3fa8f3cec9718eb275628", size = 19084482, upload-time = "2026-08-10T18:27:45.271Z" },
 ]
 
 [[package]]
 name = "michelangelo-examples"
-version = "0.0.1"
+version = "0.2.0"
 source = { editable = "." }
 
 [package.optional-dependencies]
@@ -1217,7 +1217,7 @@ california-housing = [
 
 [package.metadata]
 requires-dist = [
-    { name = "michelangelo", marker = "extra == 'california-housing'", specifier = ">=0.4.0rc2" },
+    { name = "michelangelo", marker = "extra == 'california-housing'", specifier = ">=0.8.0" },
     { name = "minio", marker = "extra == 'california-housing'", specifier = ">=7.2,<8" },
     { name = "pandas", marker = "extra == 'california-housing'", specifier = ">=2.1" },
     { name = "pyarrow", marker = "extra == 'california-housing'", specifier = ">=19.0.0,<20.0.0" },
