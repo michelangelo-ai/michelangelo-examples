@@ -27,7 +27,7 @@ california-housing = [
     "pyspark==3.5.5",
     "pytorch_lightning>=2.2.0,<3.0.0",
     "ray[default,data]>=2.55.1,<3.0.0",
-    "pyarrow>=19.0.0,<20.0.0",
+    "pyarrow>=19.0.0,<26.0.0",
     "torch>=2.0",
     "scikit-learn>=1.3",
     "pandas>=2.1",
