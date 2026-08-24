@@ -1,6 +1,6 @@
 [project]
 name = "michelangelo-examples"
-version = "0.3.0"
+version = "0.4.0"
 description = "Pip-installable, ready-to-run example models and pipelines for Michelangelo"
 readme = "README.md"
 license = "Apache-2.0"
