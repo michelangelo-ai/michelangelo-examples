@@ -70,7 +70,7 @@ jobs:
 
       - name: Open PR to update CHANGELOG.md
         if: steps.changelog-diff.outputs.changed == 'true'
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.CR_PAT }}
           base: main
