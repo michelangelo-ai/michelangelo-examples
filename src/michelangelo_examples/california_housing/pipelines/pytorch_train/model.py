@@ -8,6 +8,8 @@ models only (see ``workflow/tasks/tabular_trainer/tests/fixtures.py``).
 
 from __future__ import annotations
 
+from typing import Dict, Union
+
 import torch
 import torch.nn.functional as F
 from pytorch_lightning import LightningModule
@@ -51,6 +53,13 @@ class TorchRegressionModel(LightningModule):
         """Build the MLP and store constructor args as hyperparameters."""
         super().__init__()
         self.save_hyperparameters()
+        # Plain, typed instance attribute -- not read via self.hparams.
+        # torch.jit.script (used by the Triton packager's deployable-package
+        # conversion) can't see Lightning's dynamically-attached `hparams`
+        # object, so any attribute forward() depends on must be a regular
+        # module attribute instead. Matches the internal convention for
+        # scriptable Lightning models with config-driven column names.
+        self.feature_columns: list[str] = feature_columns
         self.net = nn.Sequential(
             nn.Linear(len(feature_columns), hidden_dim),
             nn.ReLU(),
@@ -59,7 +68,7 @@ class TorchRegressionModel(LightningModule):
             nn.Linear(hidden_dim // 2, 1),
         )
 
-    def forward(self, x: torch.Tensor | dict[str, torch.Tensor]) -> torch.Tensor:
+    def forward(self, x: Union[torch.Tensor, Dict[str, torch.Tensor]]) -> torch.Tensor:
         """Return the model's scalar prediction for a batch of feature vectors.
 
         Accepts either a pre-stacked feature tensor (what ``training_step``/
@@ -69,11 +78,19 @@ class TorchRegressionModel(LightningModule):
         ``_invoke_model`` sees a single ``forward`` parameter and calls
         ``model(batch_dict)`` -- so a bare pre-stacked-tensor-only signature
         can't serve real requests.
+
+        The type annotation uses typing.Dict/Union (not PEP 585/604 syntax)
+        and the branch below checks for ``torch.Tensor`` rather than
+        ``dict`` -- both are required for ``torch.jit.script`` (used by the
+        Triton packager's deployable-package conversion) to type-refine a
+        ``Union`` parameter; it doesn't recognize the builtin ``dict`` as a
+        type reference in either position.
         """
-        if isinstance(x, dict):
-            x = torch.stack(
-                [x[c].float() for c in self.hparams.feature_columns], dim=1
-            )
+        if isinstance(x, torch.Tensor):
+            return self.net(x)
+        x = torch.stack(
+            [x[c].float() for c in self.feature_columns], dim=1
+        )
         return self.net(x)
 
     def _assemble_batch(
@@ -81,7 +98,7 @@ class TorchRegressionModel(LightningModule):
     ) -> tuple[torch.Tensor, torch.Tensor]:
         """Stack the configured feature columns and extract the label column."""
         x = torch.stack(
-            [batch[c].float() for c in self.hparams.feature_columns], dim=1
+            [batch[c].float() for c in self.feature_columns], dim=1
         )
         y = batch[self.hparams.label_column].float().view(-1, 1)
         return x, y
