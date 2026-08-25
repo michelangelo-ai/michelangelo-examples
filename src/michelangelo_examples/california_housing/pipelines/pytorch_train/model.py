@@ -59,8 +59,21 @@ class TorchRegressionModel(LightningModule):
             nn.Linear(hidden_dim // 2, 1),
         )
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Return the model's scalar prediction for a batch of feature vectors."""
+    def forward(self, x: torch.Tensor | dict[str, torch.Tensor]) -> torch.Tensor:
+        """Return the model's scalar prediction for a batch of feature vectors.
+
+        Accepts either a pre-stacked feature tensor (what ``training_step``/
+        ``validation_step`` pass, via ``_assemble_batch``) or a raw dict of
+        per-feature tensors keyed by feature name. The latter is how the
+        Triton packager's validation/serving path invokes the model --
+        ``_invoke_model`` sees a single ``forward`` parameter and calls
+        ``model(batch_dict)`` -- so a bare pre-stacked-tensor-only signature
+        can't serve real requests.
+        """
+        if isinstance(x, dict):
+            x = torch.stack(
+                [x[c].float() for c in self.hparams.feature_columns], dim=1
+            )
         return self.net(x)
 
     def _assemble_batch(

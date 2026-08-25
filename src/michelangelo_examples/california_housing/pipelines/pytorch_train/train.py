@@ -83,7 +83,13 @@ def train(
             input_columns={
                 c: ColumnConfig("torch.float32") for c in feature_columns
             },
-            output_columns={"prediction": ColumnConfig("torch.float32")},
+            # shape=[1], not the scalar default: TorchRegressionModel's final
+            # nn.Linear(hidden_dim // 2, 1) layer produces a genuine
+            # (batch, 1) tensor -- a real one-element non-batch dimension --
+            # not a true 0-D-per-sample scalar, so the schema must declare
+            # that dimension rather than default to an empty (true-scalar)
+            # shape.
+            output_columns={"prediction": ColumnConfig("torch.float32", [1])},
             labels={LABEL_COLUMN: ColumnConfig("torch.float32")},
             metadata_columns=[],
             scaling_config=ScalingConfig(cpu_per_worker=1),

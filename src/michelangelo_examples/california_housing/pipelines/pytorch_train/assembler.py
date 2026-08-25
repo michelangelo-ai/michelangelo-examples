@@ -17,7 +17,10 @@ import fsspec
 
 import michelangelo.uniflow.core as uniflow
 from michelangelo.uniflow.plugins.ray import RayTask
-from michelangelo.workflow.schema.assembler import TabularAssemblerConfig
+from michelangelo.workflow.schema.assembler import (
+    TabularAssemblerConfig,
+    TorchAssemblerConfig,
+)
 from michelangelo.workflow.tasks.tabular_assembler.torch.assembler import (
     torch_assembler,
 )
@@ -69,5 +72,19 @@ def assembler(model_variable: ModelVariable) -> AssembledModel:
     raw_model = ModelArtifact(path=raw_model_uri, metadata=model_variable.metadata)
 
     return torch_assembler(
-        TabularAssemblerConfig(), raw_model, storage_backend=storage_backend
+        # include_import_prefixes scopes the packager's static import walk to
+        # this project's own package -- matching internal Michelangelo's
+        # convention of always scoping to ["uber"]. Leaving this unset lets
+        # the walk wander into every reachable third-party/stdlib module
+        # (torch, numpy.f2py, CPython's own test package, ...), several of
+        # which have CLI-style import-time side effects (printing help text,
+        # calling sys.exit(), raising from torch's ConfigModule) that crash
+        # the walk.
+        TabularAssemblerConfig(
+            torch=TorchAssemblerConfig(
+                include_import_prefixes=["michelangelo_examples"]
+            )
+        ),
+        raw_model,
+        storage_backend=storage_backend,
     )
