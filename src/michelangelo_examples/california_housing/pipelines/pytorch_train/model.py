@@ -8,7 +8,7 @@ models only (see ``workflow/tasks/tabular_trainer/tests/fixtures.py``).
 
 from __future__ import annotations
 
-from typing import Dict, Union
+from typing import Dict, Union  # noqa: UP035 -- see forward()'s docstring
 
 import torch
 import torch.nn.functional as F
@@ -68,7 +68,10 @@ class TorchRegressionModel(LightningModule):
             nn.Linear(hidden_dim // 2, 1),
         )
 
-    def forward(self, x: Union[torch.Tensor, Dict[str, torch.Tensor]]) -> torch.Tensor:
+    def forward(
+        self,
+        x: Union[torch.Tensor, Dict[str, torch.Tensor]],  # noqa: UP006, UP007
+    ) -> torch.Tensor:
         """Return the model's scalar prediction for a batch of feature vectors.
 
         Accepts either a pre-stacked feature tensor (what ``training_step``/
@@ -88,18 +91,14 @@ class TorchRegressionModel(LightningModule):
         """
         if isinstance(x, torch.Tensor):
             return self.net(x)
-        x = torch.stack(
-            [x[c].float() for c in self.feature_columns], dim=1
-        )
+        x = torch.stack([x[c].float() for c in self.feature_columns], dim=1)
         return self.net(x)
 
     def _assemble_batch(
         self, batch: dict[str, torch.Tensor]
     ) -> tuple[torch.Tensor, torch.Tensor]:
         """Stack the configured feature columns and extract the label column."""
-        x = torch.stack(
-            [batch[c].float() for c in self.feature_columns], dim=1
-        )
+        x = torch.stack([batch[c].float() for c in self.feature_columns], dim=1)
         y = batch[self.hparams.label_column].float().view(-1, 1)
         return x, y
 

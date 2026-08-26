@@ -14,7 +14,6 @@ import tempfile
 from typing import TYPE_CHECKING
 
 import fsspec
-
 import michelangelo.uniflow.core as uniflow
 from michelangelo.uniflow.plugins.ray import RayTask
 from michelangelo.workflow.schema.assembler import (
