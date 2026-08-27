@@ -2,6 +2,42 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.0] - 2026-08-25
+
+
+### CI/CD
+
+
+- Bump actions/upload-artifact from 4 to 7 (#20)
+
+
+- Bump actions/checkout from 4 to 7 (#21)
+
+
+- Bump astral-sh/setup-uv from 3 to 7 (#22)
+
+
+
+### Documentation
+
+
+- Update CHANGELOG.md for v0.3.0 (#29)
+
+
+
+### Miscellaneous
+
+
+- Populate kind in california-housing pusher config (#16)
+
+
+- **deps:** Bump pyarrow from 19.0.1 to 25.0.0 (#24)
+
+
+- Bump michelangelo-examples version to 0.4.0 (#35)
+
+
+
 ## [0.3.0] - 2026-08-11
 
 
