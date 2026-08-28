@@ -152,6 +152,7 @@ def push_step(
                     description="PyTorch Lightning regression on California Housing dataset",
                     kind=ModelKind.REGRESSION,
                     labels={"framework": "pytorch_lightning"},
+                    tar_deployable_package=True,
                 ),
             ),
             PusherPluginConfig(
