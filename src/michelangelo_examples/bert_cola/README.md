@@ -19,12 +19,11 @@ together via this project's own
 
 ## Deploying to Triton
 
-[`inferenceserver/`](inferenceserver/) holds this project's own Triton
-serving image and deploy manifests -- this project owns its own serving
-image, built from whatever deps its models actually need, rather than
-relying on a single shared default. See
-[`inferenceserver/README.md`](inferenceserver/README.md) (or the
-`train` pipeline's README) for how to deploy a trained model.
+[`inferenceserver/`](inferenceserver/) holds this project's deploy
+manifests. Rather than a custom serving image, `pythonDependencies` in
+`inferenceserver.yaml` declares the packages this project's serving code
+needs. See [`inferenceserver/README.md`](inferenceserver/README.md) (or
+the `train` pipeline's README) for how to deploy a trained model.
 
 ## Layout
 
@@ -34,5 +33,7 @@ relying on a single shared default. See
   its own `README.md`. These ship as real package contents -- `pip
   install` gets the code, `pipeline.yaml`, and `README.md` together, not
   just the `.py` files.
-- `inferenceserver/` -- this project's Triton serving Dockerfile and
-  `InferenceServer`/`Deployment` manifests for deploying a trained model.
+- `inferenceserver/` -- this project's `InferenceServer`/`Deployment`
+  manifests for deploying a trained model. Declares the Python packages its
+  serving code needs via `servingSpec.pythonDependencies` rather than a
+  custom Dockerfile.

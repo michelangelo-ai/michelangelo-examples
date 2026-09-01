@@ -145,7 +145,7 @@ kubectl delete cachedoutputs --all   # clear stale cached task outputs
 ## Deploying to Triton
 
 See [`../../inferenceserver/`](../../inferenceserver/) for this project's
-Triton serving image and deploy manifests. In short:
+deploy manifests. In short:
 
 ```bash
 ma inference_server apply -f src/michelangelo_examples/bert_cola/inferenceserver/inferenceserver.yaml
