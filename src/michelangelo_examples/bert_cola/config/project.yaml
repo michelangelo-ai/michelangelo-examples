@@ -1,0 +1,16 @@
+apiVersion: michelangelo.api/v2
+kind: Project
+metadata:
+  name: bert-cola
+  namespace: bert-cola
+spec:
+  description: "Michelangelo BERT CoLA Fine-Tuning Example"
+  owner:
+    owningTeam: "00000000-0000-0000-0000-000000000001"
+    owners:
+      - michelangelo-example
+    ownerGroups:
+      - michelangelo-example
+  tier: 4
+  gitRepo: https://github.com/michelangelo-ai/michelangelo-examples
+  rootDir: src/michelangelo_examples/bert_cola

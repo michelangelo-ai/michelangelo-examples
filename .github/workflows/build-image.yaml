@@ -1,11 +1,10 @@
 name: Build examples Docker image
 
-# Rebuild and push the california-housing project image whenever its
-# inputs change. As more projects are added, this workflow should grow a
-# build-matrix entry per project (each with its own PROJECT_EXTRA build
-# arg and image tag) rather than bundling every project into one image --
-# all pipelines within one project (e.g. pytorch_train today,
-# xgboost_train later) already share this same project-level image.
+# Rebuild and push each project's image whenever its inputs change. One
+# matrix entry per project (its own PROJECT_EXTRA build arg and image tag)
+# rather than bundling every project into one image -- all pipelines within
+# one project (e.g. pytorch_train/xgb_train under california_housing)
+# already share that project's own image.
 on:
   push:
     branches: [main]
@@ -24,20 +23,22 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner }}/michelangelo-examples
   # Every project currently shares one image name (michelangelo-examples),
   # so the tag itself must disambiguate which project's deps got baked in
   # -- otherwise a second project with a different PROJECT_EXTRA would
   # silently overwrite this one under the same :latest tag.
-  PROJECT_TAG: california-housing
+  IMAGE_NAME: ${{ github.repository_owner }}/michelangelo-examples
 
 jobs:
   build:
-    name: Build and push
+    name: Build and push (${{ matrix.project }})
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
+    strategy:
+      matrix:
+        project: [california-housing, bert-cola]
 
     steps:
       - name: Check out repository
@@ -59,9 +60,9 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=sha,prefix=${{ env.PROJECT_TAG }}-sha-
-            type=ref,event=branch,prefix=${{ env.PROJECT_TAG }}-
-            type=raw,value=${{ env.PROJECT_TAG }},enable=${{ github.ref == 'refs/heads/main' }}
+            type=sha,prefix=${{ matrix.project }}-sha-
+            type=ref,event=branch,prefix=${{ matrix.project }}-
+            type=raw,value=${{ matrix.project }},enable=${{ github.ref == 'refs/heads/main' }}
 
       - name: Build and push
         uses: docker/build-push-action@v5
@@ -70,7 +71,7 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
           build-args: |
-            PROJECT_EXTRA=${{ env.PROJECT_TAG }}
+            PROJECT_EXTRA=${{ matrix.project }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
