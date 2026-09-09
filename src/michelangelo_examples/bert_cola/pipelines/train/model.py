@@ -14,7 +14,6 @@ from __future__ import annotations
 import numpy as np
 import torch
 import transformers
-
 from michelangelo.lib.model_manager.interface.custom_model import Model
 
 __all__ = ["BertColaModel"]

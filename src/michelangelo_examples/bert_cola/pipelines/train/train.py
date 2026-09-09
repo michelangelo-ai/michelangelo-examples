@@ -2,15 +2,14 @@
 
 import logging
 
+import michelangelo.uniflow.core as uniflow
 import numpy as np
 import torch
 import transformers
 from datasets import Dataset as HFDataset
-from ray.data import Dataset
-
-import michelangelo.uniflow.core as uniflow
 from michelangelo.uniflow.plugins.ray import RayTask
 from michelangelo.workflow.variables import ModelVariable
+from ray.data import Dataset
 
 from michelangelo_examples.bert_cola.pipelines.train.model import BertColaModel
 

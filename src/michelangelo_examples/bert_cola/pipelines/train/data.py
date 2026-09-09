@@ -6,12 +6,11 @@ Loads and tokenizes the CoLA dataset from GLUE benchmark for BERT fine-tuning.
 import logging
 
 import datasets
+import michelangelo.uniflow.core as uniflow
 import ray
 import transformers
-from ray.data import Dataset
-
-import michelangelo.uniflow.core as uniflow
 from michelangelo.uniflow.plugins.ray import RayTask
+from ray.data import Dataset
 
 tokenizer_path = "bert-base-cased"
 

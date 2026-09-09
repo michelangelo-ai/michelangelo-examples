@@ -17,10 +17,9 @@ from typing import TYPE_CHECKING
 from urllib.parse import urlparse
 
 import fsspec
+import michelangelo.uniflow.core as uniflow
 import numpy as np
 import transformers
-
-import michelangelo.uniflow.core as uniflow
 from michelangelo.lib.model_manager.schema import DataType, ModelSchema, ModelSchemaItem
 from michelangelo.uniflow.plugins.ray import RayTask
 from michelangelo.workflow.schema.assembler import (

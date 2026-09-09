@@ -24,7 +24,7 @@ from michelangelo.workflow.tasks.pusher import push
 # Kept top-level (not TYPE_CHECKING) despite only being used in annotations --
 # uniflow's @uniflow.task needs these resolvable as real objects at the
 # workflow boundary.
-from michelangelo.workflow.variables.types import (  # noqa: TC001
+from michelangelo.workflow.variables.types import (
     AssembledModel,
     PusherResult,
 )
@@ -90,7 +90,6 @@ def push_step(assembled: AssembledModel) -> list[PusherResult]:
     registry_endpoint = os.environ.get("REGISTRY_ENDPOINT")
     if registry_endpoint:
         import grpc as _grpc
-
         from michelangelo.api.v2 import APIClient
         from michelangelo.lib.model_manager.registry.api_client import (
             APIRegistryClient,
