@@ -2,6 +2,67 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.0] - 2026-09-09
+
+
+### CI/CD
+
+
+- Bump softprops/action-gh-release from 2 to 3 (#31)
+
+
+- Bump peter-evans/create-pull-request from 6 to 8 (#32)
+
+
+- Bump docker/setup-buildx-action from 3 to 4 (#34)
+
+
+- Bump docker/build-push-action from 5 to 7 (#46)
+
+
+- Bump docker/login-action from 3 to 4 (#45)
+
+
+- Bump docker/metadata-action from 5 to 6 (#47)
+
+
+
+### Documentation
+
+
+- Update CHANGELOG.md for v0.4.0 (#38)
+
+
+
+### Features
+
+
+- **california_housing:** Wire tabular_assembler into the Lightning pipeline (#36)
+
+
+- **california_housing:** Tar the deployable package before push (#39)
+
+
+- **california-housing:** Add daily noon trigger to pytorch_train and xgb_train (#43)
+
+
+
+### Miscellaneous
+
+
+- **deps:** Bump pyarrow, pyspark, and s3fs together (#30)
+
+
+- **deps:** Bump michelangelo from 0.8.0 to 0.9.0 in the uv-minor-and-patch group across 1 directory (#42)
+
+
+- Bump michelangelo floor to 0.10.0 (#49)
+
+
+- Release 0.5.0 (#50)
+
+
+
 ## [0.4.0] - 2026-08-25
 
 
