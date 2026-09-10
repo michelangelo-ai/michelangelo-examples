@@ -1,0 +1,11 @@
+apiVersion: michelangelo.api/v2
+kind: Pipeline
+metadata:
+  namespace: "bert-cola"
+  name: "bert-cola-train"
+  annotations:
+    michelangelo/uniflow-image: ghcr.io/michelangelo-ai/michelangelo-examples:bert-cola
+spec:
+  type: "PIPELINE_TYPE_TRAIN"
+  manifest:
+    filePath: michelangelo_examples.bert_cola.pipelines.train.pipeline
