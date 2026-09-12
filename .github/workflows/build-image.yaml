@@ -38,7 +38,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        project: [california-housing, bert-cola]
+        project: [california-housing, bert-cola, gpt-oss-20b-finetune]
 
     steps:
       - name: Check out repository
