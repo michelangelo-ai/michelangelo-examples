@@ -85,6 +85,46 @@ bert-cola = [
     "minio>=7.2,<8",
 ]
 
+# gpt_oss_20b_finetune LoRA fine-tunes a causal-LM checkpoint (GPT-2 as a
+# CPU-feasible proxy for GPT-OSS-20B) via Ray Train + PyTorch Lightning +
+# PEFT. Declares transformers/peft/accelerate/datasets directly rather than
+# pulling in michelangelo's own "example" extra, same reasoning as
+# california-housing/bert-cola above.
+# Requires Python 3.11+ (see gpt_oss_20b_finetune/README.md); this repo's
+# own requires-python floor stays >=3.10 for bert-cola/california-housing.
+gpt-oss-20b-finetune = [
+    # >=0.10.0: floor kept current with michelangelo's latest release via the
+    # scheduled bump-michelangelo-pin.yml drift check.
+    "michelangelo>=0.10.0",
+    "ray[default,data]>=2.55.1,<3.0.0",
+    "torch>=2.0",
+    # <5: transformers 5.x removes the `logging_dir` kwarg from
+    # TrainingArguments, which train.py passes (same rationale as bert-cola).
+    "transformers>=4.30,<5",
+    # New, precautionary pin (no existing michelangelo-examples precedent):
+    # peft's LoraConfig API has had breaking changes across major versions.
+    "peft>=0.10,<1",
+    # model.py's GPTLightningModule is a pytorch_lightning.LightningModule
+    # subclass; train.py drives it via Ray Train's Lightning integration.
+    "pytorch_lightning>=2.2.0,<3.0.0",
+    # >=3.0: datasets<3.0 imports pa.PyExtensionType, which pyarrow removed;
+    # ray[data]'s own pyarrow floor resolves to a version too new for
+    # datasets<3.0 to import at all.
+    "datasets>=3.0",
+    # train.py's transformers.Trainer-style training loop (via
+    # LightningTrainer) requires accelerate to drive PyTorch training;
+    # transformers doesn't declare it as a core dependency.
+    "accelerate>=0.26.0",
+    # train.py logs to MLflow via pytorch_lightning.loggers.MLFlowLogger,
+    # ported as-is from core's simple_train.py. michelangelo gates the
+    # 'mlflow' package behind its own "trainer-mlflow"/"example" extras
+    # rather than declaring it as a core dependency.
+    "mlflow>=2.0,<3",
+    # eval.py's fsspec.open() needs an S3 implementation for s3:// paths;
+    # neither michelangelo nor the above deps pull one in.
+    "s3fs>=2023.1.0",
+]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
