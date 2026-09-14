@@ -62,7 +62,7 @@ bert-cola = [
     "torch>=2.0",
     # <5: transformers 5.x removes the `logging_dir` kwarg from
     # TrainingArguments, which train.py passes.
-    "transformers>=4.30,<5",
+    "transformers>=4.30,<6",
     # >=3.0: datasets<3.0 imports pa.PyExtensionType, which pyarrow removed;
     # ray[data]'s own pyarrow floor resolves to a version too new for
     # datasets<3.0 to import at all.
