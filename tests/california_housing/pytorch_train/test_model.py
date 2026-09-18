@@ -11,10 +11,10 @@ import torch
 from pytorch_lightning import Trainer
 from torch.utils.data import DataLoader, TensorDataset
 
-from michelangelo_examples.california_housing.pipelines.pytorch_train_native_transform.model import (
+from michelangelo_examples.california_housing.pipelines.pytorch_train.model import (
     NativeTxRegressionModel,
 )
-from michelangelo_examples.california_housing.pipelines.pytorch_train_native_transform.native_transform import (
+from michelangelo_examples.california_housing.pipelines.pytorch_train.native_transform import (
     FEATURE_COLUMNS,
 )
 

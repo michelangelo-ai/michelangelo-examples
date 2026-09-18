@@ -14,7 +14,7 @@ from __future__ import annotations
 import torch
 from michelangelo.lib.native_transform.torch.transform_spec import TransformSpec
 
-from michelangelo_examples.california_housing.pipelines.pytorch_train_native_transform.native_transform import (
+from michelangelo_examples.california_housing.pipelines.pytorch_train.native_transform import (
     _TRANSFORM_SPEC,
     FEATURE_COLUMNS,
 )

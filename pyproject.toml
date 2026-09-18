@@ -130,8 +130,8 @@ gpt-oss-20b-finetune = [
 [dependency-groups]
 # Unit tests exercise pure-Python/torch logic (transform specs, feature
 # derivation, the Lightning model) directly, without spinning up Ray -- see
-# tests/california_housing/pytorch_train_native_transform/. Not part of any
-# extras group since it's never needed at runtime.
+# tests/california_housing/pytorch_train/. Not part of any extras group
+# since it's never needed at runtime.
 dev = [
     "pytest>=8",
 ]
