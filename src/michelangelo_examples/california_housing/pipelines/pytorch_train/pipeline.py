@@ -2,10 +2,11 @@
 
 Workflow entry point that orchestrates the full California Housing pipeline
 via ``tabular_trainer``'s Lightning backend: feature preparation, Spark
-preprocessing, distributed Lightning training with Ray Train, an assembler
-step that packages the trained model into deployable/raw Triton packages,
-and a pusher step that exports the packaged model and preprocessed datasets
-to storage and registry.
+preprocessing, derived-feature computation, a native-transform stage
+(Scale/LogTransform/Clip), distributed Lightning training with Ray Train, an
+assembler step that packages the trained model into deployable/raw Triton
+packages, and a pusher step that exports the packaged model and preprocessed
+datasets to storage and registry.
 """
 
 from __future__ import annotations
@@ -24,6 +25,13 @@ from michelangelo_examples.california_housing.pipelines.libs.tasks.preprocess im
 from michelangelo_examples.california_housing.pipelines.pytorch_train.assembler import (
     assembler,
 )
+from michelangelo_examples.california_housing.pipelines.pytorch_train.derive_features import (
+    derive_features,
+)
+from michelangelo_examples.california_housing.pipelines.pytorch_train.native_transform import (
+    FEATURE_COLUMNS,
+    native_transform,
+)
 from michelangelo_examples.california_housing.pipelines.pytorch_train.push import (
     push_step,
 )
@@ -32,7 +40,9 @@ from michelangelo_examples.california_housing.pipelines.pytorch_train.train impo
 __all__ = [
     "PreprocessResult",
     "assembler",
+    "derive_features",
     "feature_prep",
+    "native_transform",
     "preprocess",
     "push_step",
     "train",
@@ -49,13 +59,23 @@ def train_workflow(
         "MedInc,HouseAge,AveRooms,AveBedrms,Population,AveOccup,Latitude,Longitude,target"
     ),
 ):
-    """End-to-end ML workflow: feature prep, preprocessing, training, and push.
+    """End-to-end ML workflow: feature prep, native-transform, training, push.
 
     Orchestrates the full ML lifecycle for California Housing using
     ``tabular_trainer``'s Lightning backend: feature preparation,
-    preprocessing with Spark, distributed Lightning training with Ray Train,
-    and a pusher step that pushes the trained model and preprocessed
-    datasets to storage and registry.
+    preprocessing with Spark, derived-feature computation, a native-transform
+    stage (Scale/LogTransform/Clip, run unconditionally -- it is a core part
+    of this example, not an opt-in extra), distributed Lightning training
+    with Ray Train on the transform's output columns, and a pusher step that
+    pushes the trained model and preprocessed datasets to storage and
+    registry.
+
+    Note:
+        The native-transform stage runs at training time only. ``assembler``
+        packages the trained model but does not fuse the fitted transform
+        module into the resulting artifact, so a real serving deployment
+        would need to re-apply the same transform ahead of inference itself.
+        See ``assembler.py``'s docstring for details.
 
     Args:
         dataset_cols: Comma-separated string of column names including
@@ -83,9 +103,14 @@ def train_workflow(
         train_dv=train_dv,
         validation_dv=validation_dv,
     )
+    derived_train_dv, derived_validation_dv = derive_features(
+        pr.train_data, pr.validation_data
+    )
+    native_tx_result = native_transform(derived_train_dv, derived_validation_dv)
     model_artifact = train(
-        pr,
-        feature_columns=_dataset_cols[:-1],
+        native_tx_result.transformed_datasets["train"],
+        native_tx_result.transformed_datasets["validation"],
+        feature_columns=FEATURE_COLUMNS,
     )
     assembled = assembler(model_artifact)
     return push_step(pr, assembled)

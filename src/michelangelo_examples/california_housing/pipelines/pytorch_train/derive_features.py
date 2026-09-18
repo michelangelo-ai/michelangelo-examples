@@ -1,4 +1,4 @@
-"""Derived-feature task for the native-transform California Housing pipeline.
+"""Derived-feature task for the California Housing Lightning workflow.
 
 Computes the handful of simple derived columns that feed
 ``tabular_native_transform``'s scale/log/clip chain (see ``native_transform.py``).
