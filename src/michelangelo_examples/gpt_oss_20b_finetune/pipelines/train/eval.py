@@ -104,7 +104,9 @@ def evaluate_gpt_model(
 
     log.info("Base model type: %s", type(base_model))
     if hasattr(base_model, "generate"):
-        log.info("Generate method signature: %s", inspect.signature(base_model.generate))
+        log.info(
+            "Generate method signature: %s", inspect.signature(base_model.generate)
+        )
 
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     if tokenizer.pad_token is None:
