@@ -85,6 +85,15 @@ bert-cola = [
     "minio>=7.2,<8",
 ]
 
+[dependency-groups]
+# Unit tests exercise pure-Python/torch logic (transform specs, feature
+# derivation, the Lightning model) directly, without spinning up Ray -- see
+# tests/california_housing/pytorch_train/. Not part of any extras group
+# since it's never needed at runtime.
+dev = [
+    "pytest>=8",
+]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
