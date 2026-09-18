@@ -4,6 +4,15 @@ Packages the trained Lightning model (an intra-pipeline ``ModelVariable``)
 into a registry-ready ``AssembledModel`` via ``torch_assembler``, replacing
 ``push_step``'s previous ad-hoc ``ModelArtifact`` wrapping now that an OSS
 assembler task exists.
+
+Training-time-only native-transform fidelity gap: ``pipeline.py`` runs a
+``native_transform`` stage ahead of training, but ``torch_assembler`` has no
+mechanism to fuse that stage's fitted transform module into the packaged
+artifact this task produces -- only the downstream Lightning model is
+packaged. A real serving deployment built from this artifact would need to
+re-apply the same transform to raw inputs itself before calling the model;
+this example scopes to training-time-only transform application rather than
+building assembler-fusion support.
 """
 
 from __future__ import annotations

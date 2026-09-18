@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from michelangelo_examples.california_housing.pipelines.pytorch_train_native_transform.derive_features import (
+from michelangelo_examples.california_housing.pipelines.pytorch_train.derive_features import (
     _add_derived_columns,
 )
 

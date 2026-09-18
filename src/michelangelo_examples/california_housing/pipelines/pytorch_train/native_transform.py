@@ -1,4 +1,4 @@
-"""Native-transform task for the California Housing native-transform pipeline.
+"""Native-transform task for the California Housing Lightning workflow.
 
 Wraps ``tabular_native_transform()`` with a small two-level transform chain
 over California Housing columns, mirroring the transform-DAG shape used by
