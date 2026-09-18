@@ -63,7 +63,10 @@ class _TokenizedDataset(Dataset):
 
     def __getitem__(self, idx: int) -> dict:
         sample = self._dataset[idx]
-        return {"input_ids": sample["input_ids"], "attention_mask": sample["attention_mask"]}
+        return {
+            "input_ids": sample["input_ids"],
+            "attention_mask": sample["attention_mask"],
+        }
 
 
 def main(
