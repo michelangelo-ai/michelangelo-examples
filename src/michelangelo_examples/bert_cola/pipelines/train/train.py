@@ -95,7 +95,6 @@ def train(
         per_device_eval_batch_size=batch_size,
         num_train_epochs=max_epochs,
         learning_rate=lr,
-        logging_dir=f"{output_dir}/logs",
         load_best_model_at_end=True,
     )
 
