@@ -63,12 +63,7 @@ bert-cola = [
     # <6: transformers 5.x removed the `logging_dir` kwarg from
     # TrainingArguments (moved to the TENSORBOARD_LOGGING_DIR env var / a
     # TensorBoardCallback default, only relevant if report_to includes
-    # "tensorboard", which train.py doesn't set) -- train.py no longer
-    # passes logging_dir, so this project is 5.x-clean today. The <6
-    # ceiling exists only because transformers 6 doesn't exist yet to
-    # test against, not because of a known incompatibility like the one
-    # above; when it releases, re-verify TrainingArguments/Trainer's
-    # signature before widening further.
+    # "tensorboard", which train.py doesn't set)
     "transformers>=4.30,<6",
     # >=3.0: datasets<3.0 imports pa.PyExtensionType, which pyarrow removed;
     # ray[data]'s own pyarrow floor resolves to a version too new for
