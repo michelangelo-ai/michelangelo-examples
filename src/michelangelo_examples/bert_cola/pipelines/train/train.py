@@ -104,7 +104,7 @@ def train(
         args=training_args,
         train_dataset=train_data,
         eval_dataset=validation_data,
-        tokenizer=tokenizer,
+        processing_class=tokenizer,
         compute_metrics=_compute_metrics,
     )
 
