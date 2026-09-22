@@ -122,7 +122,8 @@ COPY . .
 
 # Install python dependencies via uv, only this project's extra.
 RUN uv venv /app/.venv
-RUN uv pip install --python /app/.venv/bin/python ".[${PROJECT_EXTRA}]"
+RUN --mount=type=cache,target=/root/.cache/uv,sharing=locked \
+    uv pip install --system-certs --python /app/.venv/bin/python ".[${PROJECT_EXTRA}]"
 
 # Activate the venv by default
 ENV PATH="/app/.venv/bin:$PATH"
