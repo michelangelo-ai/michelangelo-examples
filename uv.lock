@@ -1365,7 +1365,7 @@ wheels = [
 
 [[package]]
 name = "michelangelo"
-version = "0.10.0"
+version = "0.11.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "fsspec" },
@@ -1382,7 +1382,7 @@ dependencies = [
     { name = "typing-extensions" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/0a/ed/26b101b6e971e87c76708279d03779d23f76b758b988d4d45579d75d1914/michelangelo-0.10.0-py3-none-any.whl", hash = "sha256:dd34164a113ee8290f0a87a50ef7ba02fa6bc7921558acbc61c7ee7a6a3010c1", size = 787342, upload-time = "2026-09-08T15:59:45.929Z" },
+    { url = "https://files.pythonhosted.org/packages/ee/ea/6f6df29af05603a7e40c66e3610a62593e2fc0ea3cec1bd55b9aafe7b620/michelangelo-0.11.0-py3-none-any.whl", hash = "sha256:843cbc21833c6ed3e70ae6f6ace9455279adf0b5efd536ee9ad9db86031045ac", size = 823113, upload-time = "2026-09-21T18:37:02.008Z" },
 ]
 
 [[package]]
@@ -1424,8 +1424,8 @@ california-housing = [
 requires-dist = [
     { name = "accelerate", marker = "extra == 'bert-cola'", specifier = ">=0.26.0" },
     { name = "datasets", marker = "extra == 'bert-cola'", specifier = ">=3.0" },
-    { name = "michelangelo", marker = "extra == 'bert-cola'", specifier = ">=0.8.0" },
-    { name = "michelangelo", marker = "extra == 'california-housing'", specifier = ">=0.10.0" },
+    { name = "michelangelo", marker = "extra == 'bert-cola'", specifier = ">=0.11.0" },
+    { name = "michelangelo", marker = "extra == 'california-housing'", specifier = ">=0.11.0" },
     { name = "minio", marker = "extra == 'bert-cola'", specifier = ">=7.2,<8" },
     { name = "minio", marker = "extra == 'california-housing'", specifier = ">=7.2,<8" },
     { name = "pandas", marker = "extra == 'california-housing'", specifier = ">=2.1" },
