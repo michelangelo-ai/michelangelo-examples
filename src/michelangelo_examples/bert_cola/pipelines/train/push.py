@@ -169,6 +169,15 @@ def push_step(assembled: AssembledModel) -> list[PusherResult]:
                 and cause.code() == grpc.StatusCode.UNAVAILABLE
             )
             if not is_transient or attempt == _max_attempts:
+                import sys
+                import traceback
+
+                print("push_step: non-retryable failure, root cause below:", file=sys.stderr)
+                if cause is not None:
+                    traceback.print_exception(type(cause), cause, cause.__traceback__, file=sys.stderr)
+                else:
+                    print("push_step: exc.__cause__ is None", file=sys.stderr)
+                sys.stderr.flush()
                 raise
             log.warning(
                 "push_step: transient registry UNAVAILABLE on attempt %d/%d, retrying: %s",
