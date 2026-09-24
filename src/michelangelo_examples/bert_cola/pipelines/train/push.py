@@ -10,8 +10,10 @@ from __future__ import annotations
 
 import logging
 import os
+import time
 from urllib.parse import urlparse
 
+import grpc
 import michelangelo.uniflow.core as uniflow
 from michelangelo.uniflow.plugins.ray import RayTask
 from michelangelo.workflow.schema.pusher import (
@@ -20,6 +22,7 @@ from michelangelo.workflow.schema.pusher import (
     PusherPluginConfig,
 )
 from michelangelo.workflow.tasks.pusher import push
+from michelangelo.workflow.tasks.pusher.exceptions import PusherPluginError
 
 # Kept top-level (not TYPE_CHECKING) despite only being used in annotations --
 # uniflow's @uniflow.task needs these resolvable as real objects at the
@@ -89,18 +92,30 @@ def push_step(assembled: AssembledModel) -> list[PusherResult]:
 
     registry_endpoint = os.environ.get("REGISTRY_ENDPOINT")
     if registry_endpoint:
-        import grpc as _grpc
         from michelangelo.api.v2 import APIClient
         from michelangelo.lib.model_manager.registry.api_client import (
             APIRegistryClient,
         )
 
         _insecure = os.environ.get("REGISTRY_INSECURE", "true").lower() != "false"
-        _credentials = None if _insecure else _grpc.ssl_channel_credentials()
+        _credentials = None if _insecure else grpc.ssl_channel_credentials()
+        # Keepalive pings guard against the k8s overlay network silently
+        # dropping an idle connection between channel creation and the first
+        # RPC (observed as UNAVAILABLE/"tcp handshaker shutdown" on the k3d
+        # sandbox) -- without them the channel's initial TCP connection can
+        # go stale during the raw/deployable artifact upload that precedes
+        # registration.
+        _channel_options = [
+            ("grpc.keepalive_time_ms", 10000),
+            ("grpc.keepalive_timeout_ms", 5000),
+            ("grpc.keepalive_permit_without_calls", 1),
+        ]
         _channel = (
-            _grpc.insecure_channel(registry_endpoint)
+            grpc.insecure_channel(registry_endpoint, options=_channel_options)
             if _insecure
-            else _grpc.secure_channel(registry_endpoint, _credentials)
+            else grpc.secure_channel(
+                registry_endpoint, _credentials, options=_channel_options
+            )
         )
         _api_client = APIClient(caller="bert-cola-push-step", channel=_channel)
         registry_client = APIRegistryClient(
@@ -134,12 +149,43 @@ def push_step(assembled: AssembledModel) -> list[PusherResult]:
         ]
     )
 
-    results = push(
-        config=config,
-        artifacts={"model": assembled},
-        storage_backend=storage_backend,
-        registry_client=registry_client,
-    )
+    # Retry on transient gRPC UNAVAILABLE errors talking to the registry --
+    # observed intermittently on the k3d sandbox even with channel
+    # keepalive enabled (see comment above).
+    _max_attempts = 3
+    for attempt in range(1, _max_attempts + 1):
+        try:
+            results = push(
+                config=config,
+                artifacts={"model": assembled},
+                storage_backend=storage_backend,
+                registry_client=registry_client,
+            )
+            break
+        except PusherPluginError as exc:
+            cause = exc.__cause__
+            is_transient = (
+                isinstance(cause, grpc.RpcError)
+                and cause.code() == grpc.StatusCode.UNAVAILABLE
+            )
+            if not is_transient or attempt == _max_attempts:
+                import sys
+                import traceback
+
+                print("push_step: non-retryable failure, root cause below:", file=sys.stderr)
+                if cause is not None:
+                    traceback.print_exception(type(cause), cause, cause.__traceback__, file=sys.stderr)
+                else:
+                    print("push_step: exc.__cause__ is None", file=sys.stderr)
+                sys.stderr.flush()
+                raise
+            log.warning(
+                "push_step: transient registry UNAVAILABLE on attempt %d/%d, retrying: %s",
+                attempt,
+                _max_attempts,
+                cause,
+            )
+            time.sleep(2**attempt)
 
     for r in results:
         log.info(
