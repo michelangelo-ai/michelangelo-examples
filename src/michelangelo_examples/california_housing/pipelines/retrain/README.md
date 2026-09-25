@@ -1,11 +1,20 @@
-# California Housing: Retrain (triggers pytorch-train)
+# California Housing: Retrain (triggers pytorch-train or xgb-train)
 
-Demonstrates triggering an already-registered pipeline (`pytorch-train`) as
-a child run from another pipeline's Uniflow workflow, via
+Demonstrates triggering an already-registered pipeline (`pytorch-train` or
+`xgb-train`) as a child run from another pipeline's Uniflow workflow, via
 `michelangelo.uniflow.plugins.pipeline.run_pipeline`.
 
-Part of the `california_housing` project (use case); for the pipeline this
-one triggers, see [`pytorch_train/`](../pytorch_train/README.md).
+Part of the `california_housing` project (use case); for the pipelines this
+one can trigger, see [`pytorch_train/`](../pytorch_train/README.md) and
+[`xgb_train/`](../xgb_train/README.md).
+
+`retrain_workflow` takes `pipeline_name` as an input parameter (default
+`"pytorch-train"`), so the same workflow can trigger either sibling
+pipeline — `pipeline.yaml`'s `weekly-retrain` trigger declares one
+`parametersMap` entry per target (`retrain-pytorch-train`,
+`retrain-xgb-train`), each passing a different `pipeline_name`. Both target
+pipelines share the same `dataset_cols` parameter shape, so it's forwarded
+unchanged in both entries.
 
 No local runner: `run_pipeline` requires a live `PipelineRunService` (a real
 sandbox/cluster), unlike `pytorch_train`/`xgb_train`'s `python -m` local
@@ -16,9 +25,10 @@ smoke path.
 - A Michelangelo sandbox running (`ma sandbox create`)
 - The `california-housing` project applied from this project's own config:
   `ma project apply -f src/michelangelo_examples/california_housing/config/project.yaml`
-- `pytorch-train` already registered (see
-  [`pytorch_train/README.md`](../pytorch_train/README.md)'s "End-to-end:
-  sandbox to running pipeline" section)
+- `pytorch-train` and/or `xgb-train` already registered, depending on which
+  one you intend to trigger (see [`pytorch_train/README.md`](../pytorch_train/README.md)'s
+  "End-to-end: sandbox to running pipeline" section; `xgb_train/README.md`
+  follows the same pattern)
 - This `retrain` pipeline itself registered:
   `ma pipeline apply -f src/michelangelo_examples/california_housing/pipelines/retrain/pipeline.yaml`
 

@@ -15,9 +15,11 @@ spec:
           cron: "0 6 * * 1"
         maxConcurrency: 1
         parametersMap:
-          full-features:
+          retrain-pytorch-train:
             kwArgs:
+              pipeline_name: "pytorch-train"
               dataset_cols: "MedInc,HouseAge,AveRooms,AveBedrms,Population,AveOccup,Latitude,Longitude,target"
-          full-features-weekly:
+          retrain-xgb-train:
             kwArgs:
+              pipeline_name: "xgb-train"
               dataset_cols: "MedInc,HouseAge,AveRooms,AveBedrms,Population,AveOccup,Latitude,Longitude,target"
