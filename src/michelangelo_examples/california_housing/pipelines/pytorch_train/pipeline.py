@@ -70,13 +70,6 @@ def train_workflow(
     pushes the trained model and preprocessed datasets to storage and
     registry.
 
-    Note:
-        The native-transform stage runs at training time only. ``assembler``
-        packages the trained model but does not fuse the fitted transform
-        module into the resulting artifact, so a real serving deployment
-        would need to re-apply the same transform ahead of inference itself.
-        See ``assembler.py``'s docstring for details.
-
     Args:
         dataset_cols: Comma-separated string of column names including
             features and target.
@@ -112,7 +105,7 @@ def train_workflow(
         native_tx_result.transformed_datasets["validation"],
         feature_columns=FEATURE_COLUMNS,
     )
-    assembled = assembler(model_artifact)
+    assembled = assembler(model_artifact, native_tx_result.model)
     return push_step(pr, assembled)
 
 
