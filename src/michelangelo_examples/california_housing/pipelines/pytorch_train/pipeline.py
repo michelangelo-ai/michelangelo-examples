@@ -29,7 +29,6 @@ from michelangelo_examples.california_housing.pipelines.pytorch_train.derive_fea
     derive_features,
 )
 from michelangelo_examples.california_housing.pipelines.pytorch_train.native_transform import (
-    FEATURE_COLUMNS,
     native_transform,
 )
 from michelangelo_examples.california_housing.pipelines.pytorch_train.push import (
@@ -103,7 +102,20 @@ def train_workflow(
     model_artifact = train(
         native_tx_result.transformed_datasets["train"],
         native_tx_result.transformed_datasets["validation"],
-        feature_columns=FEATURE_COLUMNS,
+        # Inlined rather than passed as native_transform.FEATURE_COLUMNS: any
+        # bare Name reference to a module-level global inside a
+        # @uniflow.workflow() body is statically transpiled and must resolve
+        # to a @uniflow.task/@uniflow.workflow/plugin/TaskConfig -- uniflow's
+        # build.py issubclass()-checks it against TaskConfig unconditionally,
+        # which raises on a plain list. Must stay in sync with
+        # native_transform.FEATURE_COLUMNS (same reason __main__.py keeps its
+        # own separate copy rather than importing that one).
+        feature_columns=[
+            "derived_house_age_log",
+            "derived_population_clipped",
+            "AveRooms",
+            "AveRooms_scaled",
+        ],
     )
     assembled = assembler(model_artifact, native_tx_result.model)
     return push_step(pr, assembled)
