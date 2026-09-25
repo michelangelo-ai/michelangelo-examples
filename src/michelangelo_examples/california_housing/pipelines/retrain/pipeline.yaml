@@ -1,0 +1,23 @@
+apiVersion: michelangelo.api/v2
+kind: Pipeline
+metadata:
+  namespace: "california-housing"
+  name: "retrain"
+  annotations:
+    michelangelo/uniflow-image: ghcr.io/michelangelo-ai/michelangelo-examples:california-housing
+spec:
+  type: "PIPELINE_TYPE_RETRAIN"
+  manifest:
+    filePath: michelangelo_examples.california_housing.pipelines.retrain.pipeline
+    triggerMap:
+      weekly-retrain:
+        cronSchedule:
+          cron: "0 6 * * 1"
+        maxConcurrency: 1
+        parametersMap:
+          full-features:
+            kwArgs:
+              dataset_cols: "MedInc,HouseAge,AveRooms,AveBedrms,Population,AveOccup,Latitude,Longitude,target"
+          full-features-weekly:
+            kwArgs:
+              dataset_cols: "MedInc,HouseAge,AveRooms,AveBedrms,Population,AveOccup,Latitude,Longitude,target"
