@@ -2,10 +2,11 @@
 
 Workflow entry point that orchestrates the full California Housing pipeline
 via ``tabular_trainer``'s Lightning backend: feature preparation, Spark
-preprocessing, distributed Lightning training with Ray Train, an assembler
-step that packages the trained model into deployable/raw Triton packages,
-and a pusher step that exports the packaged model and preprocessed datasets
-to storage and registry.
+preprocessing, derived-feature computation, a native-transform stage
+(Scale/LogTransform/Clip), distributed Lightning training with Ray Train, an
+assembler step that packages the trained model into deployable/raw Triton
+packages, and a pusher step that exports the packaged model and preprocessed
+datasets to storage and registry.
 """
 
 from __future__ import annotations
@@ -24,6 +25,12 @@ from michelangelo_examples.california_housing.pipelines.libs.tasks.preprocess im
 from michelangelo_examples.california_housing.pipelines.pytorch_train.assembler import (
     assembler,
 )
+from michelangelo_examples.california_housing.pipelines.pytorch_train.derive_features import (
+    derive_features,
+)
+from michelangelo_examples.california_housing.pipelines.pytorch_train.native_transform import (
+    native_transform,
+)
 from michelangelo_examples.california_housing.pipelines.pytorch_train.push import (
     push_step,
 )
@@ -32,7 +39,9 @@ from michelangelo_examples.california_housing.pipelines.pytorch_train.train impo
 __all__ = [
     "PreprocessResult",
     "assembler",
+    "derive_features",
     "feature_prep",
+    "native_transform",
     "preprocess",
     "push_step",
     "train",
@@ -49,13 +58,16 @@ def train_workflow(
         "MedInc,HouseAge,AveRooms,AveBedrms,Population,AveOccup,Latitude,Longitude,target"
     ),
 ):
-    """End-to-end ML workflow: feature prep, preprocessing, training, and push.
+    """End-to-end ML workflow: feature prep, native-transform, training, push.
 
     Orchestrates the full ML lifecycle for California Housing using
     ``tabular_trainer``'s Lightning backend: feature preparation,
-    preprocessing with Spark, distributed Lightning training with Ray Train,
-    and a pusher step that pushes the trained model and preprocessed
-    datasets to storage and registry.
+    preprocessing with Spark, derived-feature computation, a native-transform
+    stage (Scale/LogTransform/Clip, run unconditionally -- it is a core part
+    of this example, not an opt-in extra), distributed Lightning training
+    with Ray Train on the transform's output columns, and a pusher step that
+    pushes the trained model and preprocessed datasets to storage and
+    registry.
 
     Args:
         dataset_cols: Comma-separated string of column names including
@@ -83,11 +95,29 @@ def train_workflow(
         train_dv=train_dv,
         validation_dv=validation_dv,
     )
-    model_artifact = train(
-        pr,
-        feature_columns=_dataset_cols[:-1],
+    derived_train_dv, derived_validation_dv = derive_features(
+        pr.train_data, pr.validation_data
     )
-    assembled = assembler(model_artifact)
+    native_tx_result = native_transform(derived_train_dv, derived_validation_dv)
+    model_artifact = train(
+        native_tx_result.transformed_datasets["train"],
+        native_tx_result.transformed_datasets["validation"],
+        # Inlined rather than passed as native_transform.FEATURE_COLUMNS: any
+        # bare Name reference to a module-level global inside a
+        # @uniflow.workflow() body is statically transpiled and must resolve
+        # to a @uniflow.task/@uniflow.workflow/plugin/TaskConfig -- uniflow's
+        # build.py issubclass()-checks it against TaskConfig unconditionally,
+        # which raises on a plain list. Must stay in sync with
+        # native_transform.FEATURE_COLUMNS (same reason __main__.py keeps its
+        # own separate copy rather than importing that one).
+        feature_columns=[
+            "derived_house_age_log",
+            "derived_population_clipped",
+            "AveRooms",
+            "AveRooms_scaled",
+        ],
+    )
+    assembled = assembler(model_artifact, native_tx_result.model)
     return push_step(pr, assembled)
 
 
