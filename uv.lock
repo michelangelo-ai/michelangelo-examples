@@ -2369,6 +2369,13 @@ gpt-oss-20b-finetune = [
     { name = "torch" },
     { name = "transformers" },
 ]
+movielens = [
+    { name = "michelangelo" },
+    { name = "pandas" },
+    { name = "pytorch-lightning" },
+    { name = "ray", extra = ["data", "default"] },
+    { name = "torch" },
+]
 
 [package.metadata]
 requires-dist = [
@@ -2379,19 +2386,23 @@ requires-dist = [
     { name = "michelangelo", marker = "extra == 'bert-cola'", specifier = ">=0.11.0" },
     { name = "michelangelo", marker = "extra == 'california-housing'", specifier = ">=0.11.0" },
     { name = "michelangelo", marker = "extra == 'gpt-oss-20b-finetune'", specifier = ">=0.10.0" },
+    { name = "michelangelo", marker = "extra == 'movielens'", specifier = ">=0.11.0" },
     { name = "minio", marker = "extra == 'bert-cola'", specifier = ">=7.2,<8" },
     { name = "minio", marker = "extra == 'california-housing'", specifier = ">=7.2,<8" },
     { name = "mlflow", marker = "extra == 'gpt-oss-20b-finetune'", specifier = ">=2.0,<3" },
     { name = "pandas", marker = "extra == 'california-housing'", specifier = ">=2.1" },
+    { name = "pandas", marker = "extra == 'movielens'", specifier = ">=2.1" },
     { name = "peft", marker = "extra == 'gpt-oss-20b-finetune'", specifier = ">=0.10,<1" },
     { name = "pyarrow", marker = "extra == 'california-housing'", specifier = ">=19.0.0,<26.0.0" },
     { name = "pyspark", marker = "extra == 'california-housing'", specifier = "==4.2.0" },
     { name = "pytorch-lightning", marker = "extra == 'bert-cola'", specifier = ">=2.2.0,<3.0.0" },
     { name = "pytorch-lightning", marker = "extra == 'california-housing'", specifier = ">=2.2.0,<3.0.0" },
     { name = "pytorch-lightning", marker = "extra == 'gpt-oss-20b-finetune'", specifier = ">=2.2.0,<3.0.0" },
+    { name = "pytorch-lightning", marker = "extra == 'movielens'", specifier = ">=2.2.0,<3.0.0" },
     { name = "ray", extras = ["default", "data"], marker = "extra == 'bert-cola'", specifier = ">=2.55.1,<3.0.0" },
     { name = "ray", extras = ["default", "data"], marker = "extra == 'california-housing'", specifier = ">=2.55.1,<3.0.0" },
     { name = "ray", extras = ["default", "data"], marker = "extra == 'gpt-oss-20b-finetune'", specifier = ">=2.55.1,<3.0.0" },
+    { name = "ray", extras = ["default", "data"], marker = "extra == 'movielens'", specifier = ">=2.55.1,<3.0.0" },
     { name = "s3fs", marker = "extra == 'bert-cola'", specifier = ">=2023.1.0" },
     { name = "s3fs", marker = "extra == 'california-housing'", specifier = ">=2023.1.0" },
     { name = "s3fs", marker = "extra == 'gpt-oss-20b-finetune'", specifier = ">=2023.1.0" },
@@ -2399,12 +2410,13 @@ requires-dist = [
     { name = "torch", marker = "extra == 'bert-cola'", specifier = ">=2.0" },
     { name = "torch", marker = "extra == 'california-housing'", specifier = ">=2.0" },
     { name = "torch", marker = "extra == 'gpt-oss-20b-finetune'", specifier = ">=2.0" },
+    { name = "torch", marker = "extra == 'movielens'", specifier = ">=2.0" },
     { name = "transformers", marker = "extra == 'bert-cola'", specifier = ">=4.30,<6" },
     { name = "transformers", marker = "extra == 'gpt-oss-20b-finetune'", specifier = ">=4.30,<5" },
     { name = "xgboost", marker = "extra == 'california-housing'", specifier = ">=2.0,<4" },
     { name = "xgboost-ray", marker = "extra == 'california-housing'", specifier = ">=0.1.19,<1" },
 ]
-provides-extras = ["california-housing", "bert-cola", "gpt-oss-20b-finetune"]
+provides-extras = ["california-housing", "bert-cola", "gpt-oss-20b-finetune", "movielens"]
 
 [[package]]
 name = "minio"

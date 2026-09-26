@@ -50,8 +50,13 @@ Ported so far:
   GPT-OSS-20B, tested against GPT-2 as a CPU-feasible proxy), migrated from
   core `michelangelo`'s `python/examples/gpt_oss_20b_finetune/`. Requires
   Python 3.11+ (see that project's own README).
+- [`movielens`](src/michelangelo_examples/movielens/) — trains a tiny Neural
+  Collaborative Filtering model on MovieLens-100k via Ray Train + PyTorch
+  Lightning, migrated from core `michelangelo`'s
+  `python/examples/movielens/`. Requires Python 3.11+ (see that project's
+  own README).
 
-v1 candidates (not yet ported): `movielens`, `nomic_ai`, `amazon_books_qwen`.
+v1 candidates (not yet ported): `nomic_ai`, `amazon_books_qwen`.
 See the
 [project spec](https://github.com/michelangelo-ai/michelangelo/tree/main/python/examples)
 for the full list this repo is drawing from.
