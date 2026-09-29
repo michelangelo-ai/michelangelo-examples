@@ -37,6 +37,10 @@ def retrain_workflow(
         The completed child ``PipelineRun`` dict returned by ``run_pipeline``
         (``metadata.name``, ``status.state``).
     """
+    # TODO(https://github.com/michelangelo-ai/michelangelo-examples/issues/75):
+    # for a true end-to-end retrain, resolve the model produced by this run
+    # (model_search_by_pipeline_run, not yet a plugin) and deploy it via the
+    # existing deployment plugin.
     return run_pipeline(
         namespace=namespace,
         pipeline_name=pipeline_name,
