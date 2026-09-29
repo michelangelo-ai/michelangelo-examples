@@ -104,8 +104,8 @@ if __name__ == "__main__":
         ctx.environ["MA_API_SERVER"] = "michelangelo-apiserver:15566"
 
     ctx.environ["MLFLOW_DEFAULT_ARTIFACT_ROOT"] = "s3://mlflow"
-    ctx.environ["AWS_ACCESS_KEY_ID"] = "minioadmin"
-    ctx.environ["AWS_SECRET_ACCESS_KEY"] = "minioadmin"
+    ctx.environ["AWS_ACCESS_KEY_ID"] = "michelangeloadmin"
+    ctx.environ["AWS_SECRET_ACCESS_KEY"] = "michelangeloadmin"
 
     ctx.run(
         train_workflow,
