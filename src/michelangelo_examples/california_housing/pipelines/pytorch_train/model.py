@@ -31,6 +31,11 @@ from torch import nn
 __all__ = ["NativeTxRegressionModel", "TorchRegressionModel"]
 
 
+def _squeeze_scalar_column(col: torch.Tensor) -> torch.Tensor:
+    """A (batch,) column stays as-is; a (batch, 1) column, native-transform's scalar shape, is flattened."""
+    return col.squeeze(-1) if col.dim() > 1 else col
+
+
 class TorchRegressionModel(LightningModule):
     """Small MLP regressor trained via ``train_tabular()``'s Lightning backend.
 
@@ -194,14 +199,19 @@ class NativeTxRegressionModel(LightningModule):
         """
         if isinstance(x, torch.Tensor):
             return self.linear(x)
-        x = torch.stack([x[c].float() for c in self.feature_columns], dim=1)
+        x = self._stack_feature_columns(x)
         return self.linear(x)
+
+    def _stack_feature_columns(self, x: Dict[str, torch.Tensor]) -> torch.Tensor:  # noqa: UP006
+        """Squeeze each column independently, then stack into (batch, num_features)."""
+        columns = [_squeeze_scalar_column(x[c].float()) for c in self.feature_columns]
+        return torch.stack(columns, dim=1)
 
     def _assemble_batch(
         self, batch: dict[str, torch.Tensor]
     ) -> tuple[torch.Tensor, torch.Tensor]:
         """Stack the configured feature columns and extract the label column."""
-        x = torch.stack([batch[c].float() for c in self.feature_columns], dim=1)
+        x = self._stack_feature_columns(batch)
         y = batch[self.hparams.label_column].float().view(-1, 1)
         return x, y
 
