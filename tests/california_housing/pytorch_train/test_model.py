@@ -51,6 +51,27 @@ def test_forward_with_dict_input_matches_tensor_input():
     torch.testing.assert_close(out_from_dict, out_from_tensor)
 
 
+def test_forward_with_native_transform_shaped_columns_matches_plain_batch():
+    """A native-transform output column arrives as ``(batch, 1)``, not ``(batch,)``.
+
+    ``tabular_native_transform``'s scalar convention is a declared trailing
+    feature dim of 1 -- its layers are shape-preserving, so a real fused
+    forward pass hands ``forward()`` a ``(batch, 1)`` tensor per feature, not
+    the ``(batch,)`` shape a raw Ray Data batch column has. ``forward()``
+    must produce the same prediction either way.
+    """
+    model = _make_model()
+    batch = _make_batch(4)
+    native_transform_shaped_batch = {
+        c: v.unsqueeze(-1) if c in FEATURE_COLUMNS else v for c, v in batch.items()
+    }
+
+    out_plain = model(batch)
+    out_native_transform_shaped = model(native_transform_shaped_batch)
+
+    torch.testing.assert_close(out_plain, out_native_transform_shaped)
+
+
 def test_training_step_returns_scalar_loss():
     model = _make_model()
     batch = _make_batch(8)
