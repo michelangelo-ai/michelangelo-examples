@@ -121,7 +121,7 @@ daily schedule.
 
 | Variable | Required | Default | Description |
 |---|---|---|---|
-| `AWS_ENDPOINT_URL` | No | -- | S3-compatible endpoint URL (e.g. `http://minio:9091`). Unset = local storage |
+| `AWS_ENDPOINT_URL` | No | -- | S3-compatible endpoint URL (e.g. `http://objectstore:9091`). Unset = local storage |
 | `AWS_ACCESS_KEY_ID` | If remote | -- | Access key ID |
 | `AWS_SECRET_ACCESS_KEY` | If remote | -- | Secret access key |
 | `AWS_S3_BUCKET` | No | Parsed from `MA_FILE_SYSTEM`/`UF_STORAGE_URL` | Target bucket name |

@@ -100,7 +100,7 @@ if __name__ == "__main__":
         ctx.environ["MA_API_SERVER"] = "localhost:15566"
     else:
         ctx.environ["MLFLOW_TRACKING_URI"] = "http://mlflow-proxy:5001"
-        ctx.environ["MLFLOW_S3_ENDPOINT_URL"] = "http://minio:9091"
+        ctx.environ["MLFLOW_S3_ENDPOINT_URL"] = "http://objectstore:9091"
         ctx.environ["MA_API_SERVER"] = "michelangelo-apiserver:15566"
 
     ctx.environ["MLFLOW_DEFAULT_ARTIFACT_ROOT"] = "s3://mlflow"
