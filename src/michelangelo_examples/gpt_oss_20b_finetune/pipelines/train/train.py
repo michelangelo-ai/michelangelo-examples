@@ -122,7 +122,6 @@ def simple_train_gpt(
         log.info("No CUDA available - using CPU")
 
     scaling_config = ScalingConfig(
-        trainer_resources={"CPU": 1},
         resources_per_worker={"CPU": 2},
         num_workers=num_workers,
         use_gpu=use_gpu,
