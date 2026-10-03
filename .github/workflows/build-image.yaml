@@ -47,6 +47,8 @@ jobs:
             python_version: "3.11.11"
           - project: movielens
             python_version: "3.11.11"
+          - project: nomic-ai
+            python_version: "3.11.11"
 
     steps:
       - name: Check out repository

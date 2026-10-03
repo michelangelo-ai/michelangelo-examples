@@ -55,8 +55,13 @@ Ported so far:
   Lightning, migrated from core `michelangelo`'s
   `python/examples/movielens/`. Requires Python 3.11+ (see that project's
   own README).
+- [`nomic_ai`](src/michelangelo_examples/nomic_ai/) — fine-tunes/encodes
+  `nomic-ai/nomic-bert-2048`, a long-context (2048-token) BERT, over a
+  WikiText-2 sample via PyTorch Lightning, migrated from core
+  `michelangelo`'s `python/examples/nomic_ai/`. Requires Python 3.11+ (see
+  that project's own README).
 
-v1 candidates (not yet ported): `nomic_ai`, `amazon_books_qwen`.
+v1 candidates (not yet ported): `amazon_books_qwen`.
 See the
 [project spec](https://github.com/michelangelo-ai/michelangelo/tree/main/python/examples)
 for the full list this repo is drawing from.
