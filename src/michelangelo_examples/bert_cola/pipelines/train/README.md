@@ -124,7 +124,7 @@ python -m michelangelo_examples.bert_cola.pipelines.train.pipeline \
   remote-run \
   --image ghcr.io/michelangelo-ai/michelangelo-examples:bert-cola \
   --storage-url s3://michelangelo/workflows \
-  --environ AWS_ENDPOINT_URL=http://minio:9091 \
+  --environ AWS_ENDPOINT_URL=http://objectstore:9091 \
   --environ AWS_ACCESS_KEY_ID=michelangeloadmin \
   --environ AWS_SECRET_ACCESS_KEY=michelangeloadmin \
   --environ REGISTRY_ENDPOINT=michelangelo-apiserver:15566 \
@@ -146,7 +146,7 @@ kubectl delete cachedoutputs --all   # clear stale cached task outputs
 
 | Variable | Required | Default | Description |
 |---|---|---|---|
-| `AWS_ENDPOINT_URL` | No | -- | S3-compatible endpoint URL (include scheme, e.g. `http://minio:9091`). Unset -> local storage |
+| `AWS_ENDPOINT_URL` | No | -- | S3-compatible endpoint URL (include scheme, e.g. `http://objectstore:9091`). Unset -> local storage |
 | `AWS_ACCESS_KEY_ID` | If `AWS_ENDPOINT_URL` set | -- | Access key ID |
 | `AWS_SECRET_ACCESS_KEY` | If `AWS_ENDPOINT_URL` set | -- | Secret access key |
 | `AWS_S3_BUCKET` | No | Parsed from `MA_FILE_SYSTEM` or `UF_STORAGE_URL` | Target bucket name |

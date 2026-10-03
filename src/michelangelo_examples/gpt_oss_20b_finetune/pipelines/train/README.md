@@ -117,7 +117,7 @@ python -m michelangelo_examples.gpt_oss_20b_finetune.pipelines.train.pipeline \
   remote-run \
   --image ghcr.io/michelangelo-ai/michelangelo-examples:gpt-oss-20b-finetune \
   --storage-url s3://michelangelo/workflows \
-  --environ AWS_ENDPOINT_URL=http://minio:9091 \
+  --environ AWS_ENDPOINT_URL=http://objectstore:9091 \
   --environ AWS_ACCESS_KEY_ID=michelangeloadmin \
   --environ AWS_SECRET_ACCESS_KEY=michelangeloadmin \
   --environ MLFLOW_TRACKING_URI=http://mlflow-proxy:5001 \
