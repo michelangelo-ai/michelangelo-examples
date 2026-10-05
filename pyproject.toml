@@ -21,9 +21,9 @@ authors = [
 # declares pyspark/pytorch_lightning/ray/torch directly, matching the
 # version constraints from michelangelo's own pyproject.toml.
 california-housing = [
-    # >=0.5.0: floor kept current with michelangelo's latest release via the
+    # >=0.12.0: floor kept current with michelangelo's latest release via the
     # scheduled bump-michelangelo-pin.yml drift check.
-    "michelangelo>=0.11.0",
+    "michelangelo>=0.12.0",
     "pyspark==4.2.0",
     "pytorch_lightning>=2.2.0,<3.0.0",
     "ray[default,data]>=2.55.1,<3.0.0",
@@ -55,9 +55,9 @@ california-housing = [
 # directly rather than pulling in michelangelo's own "example" extra, same
 # reasoning as california-housing above.
 bert-cola = [
-    # >=0.8.0: floor kept current with michelangelo's latest release via the
+    # >=0.12.0: floor kept current with michelangelo's latest release via the
     # scheduled bump-michelangelo-pin.yml drift check.
-    "michelangelo>=0.11.0",
+    "michelangelo>=0.12.0",
     "ray[default,data]>=2.55.1,<3.0.0",
     "torch>=2.0",
     # <6: transformers 5.x removed the `logging_dir` kwarg from
@@ -95,9 +95,9 @@ bert-cola = [
 # Requires Python 3.11+ (see gpt_oss_20b_finetune/README.md); this repo's
 # own requires-python floor stays >=3.10 for bert-cola/california-housing.
 gpt-oss-20b-finetune = [
-    # >=0.10.0: floor kept current with michelangelo's latest release via the
+    # >=0.12.0: floor kept current with michelangelo's latest release via the
     # scheduled bump-michelangelo-pin.yml drift check.
-    "michelangelo>=0.10.0",
+    "michelangelo>=0.12.0",
     "ray[default,data]>=2.55.1,<3.0.0",
     "torch>=2.0",
     # <5: transformers 5.x removes the `logging_dir` kwarg from
@@ -139,9 +139,9 @@ gpt-oss-20b-finetune = [
 # Requires Python 3.11+ (see movielens/README.md); this repo's own
 # requires-python floor stays >=3.10 for bert-cola/california-housing.
 movielens = [
-    # >=0.11.0: floor kept current with michelangelo's latest release via the
+    # >=0.12.0: floor kept current with michelangelo's latest release via the
     # scheduled bump-michelangelo-pin.yml drift check.
-    "michelangelo>=0.11.0",
+    "michelangelo>=0.12.0",
     "ray[default,data]>=2.55.1,<3.0.0",
     "torch>=2.0",
     # model.py's NCFLightningModule is a pytorch_lightning.LightningModule

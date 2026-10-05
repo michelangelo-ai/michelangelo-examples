@@ -2304,7 +2304,7 @@ wheels = [
 
 [[package]]
 name = "michelangelo"
-version = "0.11.0"
+version = "0.12.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "fsspec" },
@@ -2321,7 +2321,7 @@ dependencies = [
     { name = "typing-extensions" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ee/ea/6f6df29af05603a7e40c66e3610a62593e2fc0ea3cec1bd55b9aafe7b620/michelangelo-0.11.0-py3-none-any.whl", hash = "sha256:843cbc21833c6ed3e70ae6f6ace9455279adf0b5efd536ee9ad9db86031045ac", size = 823113, upload-time = "2026-09-21T18:37:02.008Z" },
+    { url = "https://files.pythonhosted.org/packages/6b/31/76de4a2778a49fb9ac56753d14e2eed961729a1ba4249a13e69f1106d4f1/michelangelo-0.12.0-py3-none-any.whl", hash = "sha256:608aceacca5e1a5a25391c40d84524bca7f62d5d42d5b868e487f4cc1d81479a", size = 880163, upload-time = "2026-10-05T16:33:44.761Z" },
 ]
 
 [[package]]
@@ -2383,10 +2383,10 @@ requires-dist = [
     { name = "accelerate", marker = "extra == 'gpt-oss-20b-finetune'", specifier = ">=0.26.0" },
     { name = "datasets", marker = "extra == 'bert-cola'", specifier = ">=3.0" },
     { name = "datasets", marker = "extra == 'gpt-oss-20b-finetune'", specifier = ">=3.0" },
-    { name = "michelangelo", marker = "extra == 'bert-cola'", specifier = ">=0.11.0" },
-    { name = "michelangelo", marker = "extra == 'california-housing'", specifier = ">=0.11.0" },
-    { name = "michelangelo", marker = "extra == 'gpt-oss-20b-finetune'", specifier = ">=0.10.0" },
-    { name = "michelangelo", marker = "extra == 'movielens'", specifier = ">=0.11.0" },
+    { name = "michelangelo", marker = "extra == 'bert-cola'", specifier = ">=0.12.0" },
+    { name = "michelangelo", marker = "extra == 'california-housing'", specifier = ">=0.12.0" },
+    { name = "michelangelo", marker = "extra == 'gpt-oss-20b-finetune'", specifier = ">=0.12.0" },
+    { name = "michelangelo", marker = "extra == 'movielens'", specifier = ">=0.12.0" },
     { name = "minio", marker = "extra == 'bert-cola'", specifier = ">=7.2,<8" },
     { name = "minio", marker = "extra == 'california-housing'", specifier = ">=7.2,<8" },
     { name = "mlflow", marker = "extra == 'gpt-oss-20b-finetune'", specifier = ">=2.0,<3" },
