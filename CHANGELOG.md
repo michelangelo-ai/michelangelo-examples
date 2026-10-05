@@ -2,6 +2,64 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.0] - 2026-10-05
+
+
+### Bug Fixes
+
+
+- **ci:** Keep uv.lock in sync with pyproject.toml on version bumps (#66)
+
+
+- **gpt_oss_20b_finetune:** Remove deprecated ScalingConfig trainer_resources (#78)
+
+
+
+### Documentation
+
+
+- Update CHANGELOG.md for v0.6.0 (#67)
+
+
+
+### Features
+
+
+- **gpt-oss-20b-finetune:** Migrate example from core to michelangelo-examples (#59)
+
+
+- **california-housing:** Add retrain pipeline triggering pytorch-train/ xgb-train (#70)
+
+
+- **movielens:** Migrate example from core to michelangelo-examples (#72)
+
+
+- **nomic-ai:** Migrate example from core to michelangelo-examples (#77)
+
+
+
+### Miscellaneous
+
+
+- Cache uv downloads and respect system CA store in Dockerfile (#68)
+
+
+- **deps:** Regenerate uv.lock to match pyproject.toml (#71)
+
+
+- Rename hardcoded sandbox credential minioadmin -> michelangeloadmin (#74)
+
+
+- Rename sandbox object-store endpoint references minio -> objectstore (#76)
+
+
+- Bump michelangelo floor to >=0.12.0 (#81)
+
+
+- Release 0.7.0 (#82)
+
+
+
 ## [0.6.0] - 2026-09-22
 
 
