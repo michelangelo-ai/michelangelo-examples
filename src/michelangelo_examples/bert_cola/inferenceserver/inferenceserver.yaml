@@ -30,9 +30,9 @@ spec:
   owner:
     name: "example-owner"
   clusterTargets:
-  - clusterId: michelangelo-sandbox
+  - clusterId: scala-hello-test
     kubernetes:
       host: https://kubernetes.default.svc
       port: "443"
-      tokenTag: cluster-michelangelo-sandbox-is-token
-      caDataTag: cluster-michelangelo-sandbox-ca-data
+      tokenTag: scala-hello-test-cluster-auth
+      caDataTag: scala-hello-test-cluster-auth
