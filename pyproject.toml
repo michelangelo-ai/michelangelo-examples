@@ -121,7 +121,7 @@ gpt-oss-20b-finetune = [
     # ported as-is from core's simple_train.py. michelangelo gates the
     # 'mlflow' package behind its own "trainer-mlflow"/"example" extras
     # rather than declaring it as a core dependency.
-    "mlflow>=2.0,<3",
+    "mlflow>=2.0,<4",
     # eval.py's fsspec.open() needs an S3 implementation for s3:// paths;
     # neither michelangelo nor the above deps pull one in.
     "s3fs>=2023.1.0",
