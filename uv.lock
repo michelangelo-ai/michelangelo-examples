@@ -2640,7 +2640,7 @@ requires-dist = [
     { name = "torch", marker = "extra == 'gpt-oss-20b-finetune'", specifier = ">=2.0" },
     { name = "torch", marker = "extra == 'movielens'", specifier = ">=2.0" },
     { name = "torch", marker = "extra == 'nomic-ai'", specifier = ">=2.0" },
-    { name = "transformers", marker = "extra == 'amazon-books-qwen'" },
+    { name = "transformers", marker = "extra == 'amazon-books-qwen'", specifier = ">=4.30,<5" },
     { name = "transformers", marker = "extra == 'bert-cola'", specifier = ">=4.30,<6" },
     { name = "transformers", marker = "extra == 'gpt-oss-20b-finetune'", specifier = ">=4.30,<5" },
     { name = "transformers", marker = "extra == 'nomic-ai'", specifier = ">=4.30,<5" },
