@@ -101,21 +101,39 @@ def assembler(
         else None
     )
 
-    return torch_assembler(
-        # include_import_prefixes scopes the packager's static import walk to
-        # this project's own package -- matching internal Michelangelo's
-        # convention of always scoping to ["uber"]. Leaving this unset lets
-        # the walk wander into every reachable third-party/stdlib module
-        # (torch, numpy.f2py, CPython's own test package, ...), several of
-        # which have CLI-style import-time side effects (printing help text,
-        # calling sys.exit(), raising from torch's ConfigModule) that crash
-        # the walk.
-        TabularAssemblerConfig(
-            torch=TorchAssemblerConfig(
-                include_import_prefixes=["michelangelo_examples"]
-            )
-        ),
-        raw_model,
-        native_transform_model=native_tx_artifact,
-        storage_backend=storage_backend,
+    # include_import_prefixes scopes the packager's static import walk to
+    # this project's own package -- matching internal Michelangelo's
+    # convention of always scoping to ["uber"]. Leaving this unset lets
+    # the walk wander into every reachable third-party/stdlib module
+    # (torch, numpy.f2py, CPython's own test package, ...), several of
+    # which have CLI-style import-time side effects (printing help text,
+    # calling sys.exit(), raising from torch's ConfigModule) that crash
+    # the walk.
+    config = TabularAssemblerConfig(
+        torch=TorchAssemblerConfig(include_import_prefixes=["michelangelo_examples"])
     )
+    try:
+        return torch_assembler(
+            config,
+            raw_model,
+            native_transform_model=native_tx_artifact,
+            storage_backend=storage_backend,
+        )
+    except NotImplementedError:
+        if native_tx_artifact is None:
+            raise
+        # Fusing a native-transform model needs the native-transform package,
+        # which OSS michelangelo does not ship yet. Package the trained model
+        # on its own so the pipeline still completes; serving then has to
+        # apply the transform itself.
+        log.warning(
+            "Fusing the native-transform model is not supported by this "
+            "michelangelo build; packaging the trained model without it.",
+            exc_info=True,
+        )
+        return torch_assembler(
+            config,
+            raw_model,
+            native_transform_model=None,
+            storage_backend=storage_backend,
+        )
