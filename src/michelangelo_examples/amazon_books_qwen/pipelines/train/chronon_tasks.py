@@ -77,36 +77,15 @@ def _setup_chronon_environment():
             urllib.request.urlretrieve(jar_url, jar_path)
             print(f"Downloaded to {jar_path}")
 
-    # Set up S3 dependencies
-    print("Setting up S3 dependencies...")
-    s3_deps_dir = "/tmp/spark-s3-deps"
-    os.makedirs(s3_deps_dir, exist_ok=True)
-
-    hadoop_aws_jar = f"{s3_deps_dir}/hadoop-aws-3.3.4.jar"
-    aws_sdk_jar = f"{s3_deps_dir}/aws-java-sdk-bundle-1.12.367.jar"
-
-    if not os.path.exists(hadoop_aws_jar):
-        print("Downloading Hadoop AWS JAR...")
-        urllib.request.urlretrieve(
-            "https://repo1.maven.org/maven2/org/apache/hadoop/"
-            "hadoop-aws/3.3.4/hadoop-aws-3.3.4.jar",
-            hadoop_aws_jar,
-        )
-
-    if not os.path.exists(aws_sdk_jar):
-        print("Downloading AWS SDK JAR...")
-        urllib.request.urlretrieve(
-            "https://repo1.maven.org/maven2/com/amazonaws/"
-            "aws-java-sdk-bundle/1.12.367/aws-java-sdk-bundle-1.12.367.jar",
-            aws_sdk_jar,
-        )
-
+    # S3A support (hadoop-aws plus the AWS SDK v2 bundle) is preinstalled in
+    # $SPARK_HOME/jars by the repo Dockerfile, matched to the Hadoop client
+    # that ships with Spark. Do not add other hadoop-aws/AWS SDK jars here: they
+    # would collide with the preinstalled ones.
     os.makedirs("/tmp/spark", exist_ok=True)
     os.makedirs("/tmp/chronon_data", exist_ok=True)
     os.makedirs("/tmp/chronon_features", exist_ok=True)
 
     print("Chronon environment ready")
-    print("S3 dependencies ready")
     return jar_path
 
 
@@ -148,14 +127,10 @@ def compute_chronon_features_with_spark(
     if existing_spark:
         existing_spark.stop()
 
-    # Create Spark session with Chronon JAR + S3 support
-    hadoop_aws_jar = "/tmp/spark-s3-deps/hadoop-aws-3.3.4.jar"
-    aws_sdk_jar = "/tmp/spark-s3-deps/aws-java-sdk-bundle-1.12.367.jar"
-    all_jars = f"{jar_path},{hadoop_aws_jar},{aws_sdk_jar}"
-
+    # Create Spark session with the Chronon JAR (S3A jars come from the image)
     spark = (
         SparkSession.builder.appName("ChronoAmazonBooks")
-        .config("spark.jars", all_jars)
+        .config("spark.jars", jar_path)
         .config(
             "spark.sql.sources.commitProtocolClass",
             "org.apache.spark.sql.execution.datasources."
