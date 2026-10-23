@@ -69,6 +69,13 @@ def _setup_chronon_environment():
         if not os.path.exists(jar_path):
             print(f"Chronon JAR not found at {jar_path}")
             os.makedirs("/tmp/chronon", exist_ok=True)
+            # NOTE: this assembly is a Scala 2.12 build at 0.0.23, but the extra
+            # pins pyspark 4.x (Scala 2.13) and chronon-ai==0.0.109. The JAR
+            # should match both the Scala version of the Spark image and the
+            # chronon-ai version (a spark_uber_2.13 build at 0.0.109 exists on
+            # Maven Central). This combination has not been run end to end.
+            # Until it is verified, place a matching JAR at
+            # data/chronon-spark.jar to override this download.
             jar_url = (
                 "https://repo1.maven.org/maven2/ai/chronon/"
                 "spark_uber_2.12/0.0.23/spark_uber_2.12-0.0.23-assembly.jar"
