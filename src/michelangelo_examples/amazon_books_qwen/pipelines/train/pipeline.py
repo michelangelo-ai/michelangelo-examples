@@ -26,7 +26,6 @@ if sys.version_info < (3, 11):
     )
 
 import michelangelo.uniflow.core as uniflow
-from michelangelo.uniflow.plugins.ray import UF_PLUGIN_RAY_USE_FSSPEC
 
 from michelangelo_examples.amazon_books_qwen.pipelines.train.chronon_tasks import (
     compute_chronon_features_with_spark,
@@ -88,30 +87,7 @@ def amazon_books_qwen_workflow(sample_size=100):
 
 
 if __name__ == "__main__":
-    print("=" * 80)
-    print("Amazon Books Qwen Dual-Encoder Pipeline")
-    print("=" * 80)
-
-    ctx = uniflow.create_context()
-
-    ctx.environ["DATA_SIZE"] = "100"
-    ctx.environ[UF_PLUGIN_RAY_USE_FSSPEC] = "0"
-    ctx.environ["PYTORCH_MPS_HIGH_WATERMARK_RATIO"] = "0"
-    ctx.environ["MA_NAMESPACE"] = "default"
-    ctx.environ["IMAGE_PULL_POLICY"] = "IfNotPresent"
-    ctx.environ["S3_ALLOW_BUCKET_CREATION"] = "True"
-
-    ctx.environ["QWEN_MODEL_SIZE"] = "local"
-    ctx.environ["ENABLE_BF16"] = "False"
-    ctx.environ["MAX_QUERY_LENGTH"] = "128"
-    ctx.environ["MAX_DOC_LENGTH"] = "512"
-    ctx.environ["SPARK_LOG_URL_PREFIX"] = "http://localhost:9091/logs"
-
-    sample_size = 1000
-    if ctx.is_local_run():
-        print("=" * 80)
-        print("Using smaller dataset")
-        print("=" * 80)
-        sample_size = 100
-
-    result = ctx.run(amazon_books_qwen_workflow, sample_size)
+    raise SystemExit(
+        "amazon-books-qwen is a Uniflow-only project with no local runner: "
+        "its tasks need Spark and Ray. Run it through Uniflow instead."
+    )

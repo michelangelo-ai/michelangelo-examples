@@ -35,7 +35,7 @@ ma pipeline run --namespace amazon-books-qwen --name amazon-books-qwen-train
 | `pipeline.py` | `@uniflow.workflow()` entry point wiring download -> chronon -> train |
 | `pipeline.yaml` | Michelangelo pipeline manifest |
 | `download.py` | SparkTask: download Amazon Books dataset from Kaggle |
-| `chronon_tasks.py` | SparkTask: Chronon feature engineering (JAR download, staging query, GroupBy aggregation) |
+| `chronon_tasks.py` | SparkTask: Chronon feature engineering (Chronon JAR download, staging query, GroupBy aggregation) |
 | `train.py` | RayTask: Qwen dual-encoder training (local or distributed) |
 | `data/` | Chronon configuration tree (group_bys, staging_queries, joins, sources) |
 
@@ -66,11 +66,14 @@ No additional Dockerfile changes were needed.
 
 ## Chronon JAR / network egress
 
-`chronon_tasks.py` downloads JARs from Maven Central at pipeline *run*
-time (not just install time):
+`chronon_tasks.py` downloads the Chronon assembly JAR from Maven Central at
+pipeline *run* time (not just install time):
 - `spark_uber_2.12-0.0.23-assembly.jar` (Chronon)
-- `hadoop-aws-3.3.4.jar`
-- `aws-java-sdk-bundle-1.12.367.jar`
+
+The S3A dependencies (`hadoop-aws`, the AWS SDK v2 bundle) are not downloaded
+by the task; the repo Dockerfile installs versions matched to the Hadoop client
+bundled with Spark into `$SPARK_HOME/jars`. Adding other `hadoop-aws` or AWS
+SDK v1 JARs via `spark.jars` would collide with them.
 
 If running in a network-restricted sandbox, ensure Maven Central is
-reachable or pre-stage these JARs at the expected paths under `/tmp/`.
+reachable or pre-stage the Chronon JAR at `/tmp/chronon/chronon-spark.jar`.

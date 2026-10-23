@@ -43,7 +43,8 @@ uniflow-only project with no local runner.
 This pipeline requires network egress at **run time** (not just install
 time):
 - Kaggle API for dataset download
-- Maven Central for Chronon JAR + Hadoop/AWS SDK JARs
+- Maven Central for the Chronon JAR (the Hadoop S3A/AWS SDK JARs are
+  preinstalled in the Spark image)
 - HuggingFace Hub for model/tokenizer weights
 
 If running in a network-restricted sandbox, ensure these endpoints are
