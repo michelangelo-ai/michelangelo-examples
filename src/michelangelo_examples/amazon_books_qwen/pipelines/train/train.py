@@ -8,6 +8,8 @@ Migrated from core ``michelangelo``'s
 
 import logging
 import os
+import tempfile
+from pathlib import Path
 from typing import Any
 
 import michelangelo.uniflow.core as uniflow
@@ -17,14 +19,24 @@ import torch
 import torch.nn.functional as F
 from michelangelo.uniflow.plugins.ray import RayTask
 from michelangelo.workflow.variables import DatasetVariable
-from ray.air.config import ScalingConfig
 from ray.data import Dataset
-from ray.train import Checkpoint
+from ray.train import Checkpoint, ScalingConfig
 from ray.train.torch import TorchTrainer
 from torch import nn
 from transformers import AutoModel, AutoTokenizer
 
 log = logging.getLogger(__name__)
+
+CHECKPOINT_FILENAME = "checkpoint.pt"
+
+
+def load_checkpoint_state(checkpoint_dir: str | os.PathLike) -> dict[str, Any]:
+    """Load the training state saved by ``train_func`` from a checkpoint dir."""
+    return torch.load(
+        Path(checkpoint_dir) / CHECKPOINT_FILENAME,
+        map_location="cpu",
+        weights_only=True,
+    )
 
 
 class QwenDualEncoder(nn.Module):
@@ -102,6 +114,10 @@ class QwenDualEncoder(nn.Module):
             return_tensors="pt",
         )
 
+        query_inputs = {
+            name: tensor.to(next(self.query_encoder.parameters()).device)
+            for name, tensor in query_inputs.items()
+        }
         query_outputs = self.query_encoder(**query_inputs)
 
         # Sum pooling over all tokens
@@ -121,6 +137,10 @@ class QwenDualEncoder(nn.Module):
             return_tensors="pt",
         )
 
+        doc_inputs = {
+            name: tensor.to(next(self.doc_encoder.parameters()).device)
+            for name, tensor in doc_inputs.items()
+        }
         doc_outputs = self.doc_encoder(**doc_inputs)
 
         # Sum pooling over all tokens
@@ -268,26 +288,27 @@ def train_func(config: dict[str, Any]) -> dict[str, Any]:
 
         avg_val_loss = sum(val_losses) / len(val_losses) if val_losses else 0
 
-        ray.train.report(
-            {
-                "epoch": epoch + 1,
-                "train_loss": avg_epoch_loss,
-                "val_loss": avg_val_loss,
-            }
-        )
-
-        checkpoint = Checkpoint.from_dict(
-            {
-                "model_state_dict": model.module.state_dict()
-                if hasattr(model, "module")
-                else model.state_dict(),
-                "optimizer_state_dict": optimizer.state_dict(),
-                "epoch": epoch,
-                "train_loss": avg_epoch_loss,
-                "val_loss": avg_val_loss,
-            }
-        )
-        ray.train.report({}, checkpoint=checkpoint)
+        with tempfile.TemporaryDirectory() as checkpoint_dir:
+            torch.save(
+                {
+                    "model_state_dict": model.module.state_dict()
+                    if hasattr(model, "module")
+                    else model.state_dict(),
+                    "optimizer_state_dict": optimizer.state_dict(),
+                    "epoch": epoch,
+                    "train_loss": avg_epoch_loss,
+                    "val_loss": avg_val_loss,
+                },
+                Path(checkpoint_dir) / CHECKPOINT_FILENAME,
+            )
+            ray.train.report(
+                {
+                    "epoch": epoch + 1,
+                    "train_loss": avg_epoch_loss,
+                    "val_loss": avg_val_loss,
+                },
+                checkpoint=Checkpoint.from_directory(checkpoint_dir),
+            )
 
         model.train()
 
@@ -465,7 +486,8 @@ def _train_distributed(
     result = trainer.fit()
 
     checkpoint = result.checkpoint
-    checkpoint_data = checkpoint.to_dict()
+    with checkpoint.as_directory() as checkpoint_dir:
+        checkpoint_data = load_checkpoint_state(checkpoint_dir)
 
     model_save_path = "/tmp/qwen_dual_encoder_distributed.pt"
     torch.save(checkpoint_data, model_save_path)
