@@ -1,0 +1,16 @@
+apiVersion: michelangelo.api/v2
+kind: Project
+metadata:
+  name: amazon-books-qwen
+  namespace: amazon-books-qwen
+spec:
+  description: "Michelangelo Amazon Books Qwen Dual-Encoder Example"
+  owner:
+    owningTeam: "00000000-0000-0000-0000-000000000001"
+    owners:
+      - michelangelo-example
+    ownerGroups:
+      - michelangelo-example
+  tier: 4
+  gitRepo: https://github.com/michelangelo-ai/michelangelo-examples
+  rootDir: src/michelangelo_examples/amazon_books_qwen
