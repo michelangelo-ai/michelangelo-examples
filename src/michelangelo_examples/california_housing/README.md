@@ -23,6 +23,9 @@ via [`libs/tasks/`](pipelines/libs/tasks/).
 ## Layout
 
 - `config/project.yaml` — this project's Michelangelo Project CRD config.
+- `config/localqueue.yaml` — this project's reference Kueue LocalQueue. Apply it with
+  `kubectl --context <compute-cluster> apply -f src/michelangelo_examples/california_housing/config/localqueue.yaml`
+  on each Kueue-managed compute cluster the project runs on; see the file's header.
 - `pipelines/<pipeline-name>/` — one directory per pipeline: model,
   training, and pipeline-task code, a `__main__.py` local runner
   (`python -m michelangelo_examples.california_housing.pipelines.<pipeline-name>`),

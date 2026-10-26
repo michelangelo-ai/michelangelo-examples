@@ -1,0 +1,23 @@
+# Reference Kueue LocalQueue for the california-housing project.
+#
+# Apply it on each Kueue-managed compute cluster this project may run on,
+# not on the control plane (requires Kueue >= 0.15, which serves v1beta2):
+#   kubectl --context <compute-cluster> apply -f src/michelangelo_examples/california_housing/config/localqueue.yaml
+#
+# - The name is how the control plane resolves this project's queue by
+#   default: "ma-{project}", where the project is the job's namespace (california-housing).
+# - It lives in "default" because the control plane creates every RayCluster
+#   there, and Kueue looks a workload's LocalQueue up in its own namespace.
+# - Its presence is the allowlist: without it, this project's jobs wait with
+#   KueueQueueNotFound. Capacity is the cluster's ClusterQueue
+#   ("cluster-queue"), owned by the cluster operator and shared by every
+#   project on the cluster.
+# - Manage each queue name one way: by hand from this file, or in the
+#   cluster's queues chart (localQueues), not both.
+apiVersion: kueue.x-k8s.io/v1beta2
+kind: LocalQueue
+metadata:
+  name: ma-california-housing
+  namespace: default
+spec:
+  clusterQueue: cluster-queue
