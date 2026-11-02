@@ -190,6 +190,24 @@ nomic-ai = [
     "datasets>=3.0",
 ]
 
+# amazon_books_qwen trains a Qwen-based dual-encoder recommendation model
+# on the Amazon Books dataset using Chronon temporal feature engineering
+# (Spark) and Ray-based training. Uniflow-only pipeline (no __main__.py).
+# Requires Python 3.11+ (see amazon_books_qwen/README.md); this repo's
+# own requires-python floor stays >=3.10 for bert-cola/california-housing.
+amazon-books-qwen = [
+    "michelangelo>=0.12.0",
+    "ray[default,data]>=2.55.1,<3.0.0",
+    "torch>=2.0",
+    # Must match SPARK_VERSION in the Dockerfile: the pip package is the
+    # Python driver for the Spark distribution installed in the image.
+    "pyspark==4.2.0",
+    "chronon-ai==0.0.109",
+    "kaggle",
+    # <5: locked/tested on 4.57.x; train.py has not been run against 5.x.
+    "transformers>=4.30,<5",
+]
+
 [dependency-groups]
 # Unit tests exercise pure-Python/torch logic (transform specs, feature
 # derivation, the Lightning model) directly, without spinning up Ray -- see

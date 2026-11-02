@@ -61,7 +61,11 @@ Ported so far:
   `michelangelo`'s `python/examples/nomic_ai/`. Requires Python 3.11+ (see
   that project's own README).
 
-v1 candidates (not yet ported): `amazon_books_qwen`.
+- [`amazon_books_qwen`](src/michelangelo_examples/amazon_books_qwen/) --
+  Qwen-based dual-encoder recommendation on Amazon Books with Chronon
+  feature engineering and Ray training. Uniflow-only (no local runner).
+  Requires Python 3.11+ and Kaggle API credentials.
+
 See the
 [project spec](https://github.com/michelangelo-ai/michelangelo/tree/main/python/examples)
 for the full list this repo is drawing from.
