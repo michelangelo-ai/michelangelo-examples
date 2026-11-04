@@ -208,6 +208,62 @@ amazon-books-qwen = [
     "transformers>=4.30,<5",
 ]
 
+# llm_prediction runs offline batch LLM inference over a HuggingFace dataset
+# (openai/gsm8k by default) as a local uniflow workflow, with two
+# backends shipped as sibling pipelines: hf_predict (HuggingFace
+# Transformers, CPU or GPU) and vllm_predict (vLLM, GPU-only). Each backend
+# gets its own extras group so the HF path never has to install vLLM.
+# Declares transformers/datasets directly rather than pulling in
+# michelangelo's own "example"/"vllm" extras, same reasoning as
+# california-housing/bert-cola above.
+# Requires Python 3.11+ (see llm_prediction/README.md); this repo's own
+# requires-python floor stays >=3.10 for bert-cola/california-housing.
+llm-prediction = [
+    # >=0.12.0: floor kept current with michelangelo's latest release via the
+    # scheduled bump-michelangelo-pin.yml drift check.
+    "michelangelo>=0.12.0",
+    "ray[default,data]>=2.55.1,<3.0.0",
+    "torch>=2.0",
+    # predict.py's HFPredictor uses transformers.pipeline("text-generation")
+    # for inference only -- no transformers.Trainer/TrainingArguments, so
+    # bert-cola's logging_dir-removal pin rationale doesn't apply.
+    "transformers>=4.30",
+    # predict.py passes device_map="auto" to transformers.pipeline(), which
+    # requires accelerate; transformers doesn't declare it as a core
+    # dependency.
+    "accelerate>=0.26.0",
+    # >=3.0: same pyarrow-compatibility floor as bert-cola above.
+    "datasets>=3.0",
+]
+
+# vLLM backend for llm_prediction (pipelines/vllm_predict). GPU-only: vLLM
+# 0.9.2 publishes a Linux x86_64 (CUDA) wheel only, so this extra only
+# installs on AMD64 Linux with a CUDA-capable GPU (documented in
+# llm_prediction/README.md rather than enforced with a platform marker).
+# Requires Python 3.11 or 3.12: vllm==0.9.2 itself declares
+# requires-python <3.13, hence the python_version marker (matching core
+# michelangelo's own `vllm = { version = "0.9.2", python = "<3.13" }`);
+# the vllm_predict entry point raises a RuntimeError outside 3.11/3.12.
+llm-prediction-vllm = [
+    # >=0.12.0: floor kept current with michelangelo's latest release via the
+    # scheduled bump-michelangelo-pin.yml drift check.
+    "michelangelo>=0.12.0",
+    "ray[default,data]>=2.55.1,<3.0.0",
+    # ==0.9.2: matches core michelangelo's own vllm pin. vllm pins its own
+    # torch/torchvision/torchaudio versions, so those aren't repeated here.
+    "vllm==0.9.2; python_version < '3.13'",
+    # <4.54: vllm 0.9.2 registers its own "aimv2" config, and transformers
+    # 4.54.0 added one under the same name, so `from vllm import LLM` fails
+    # with "'aimv2' is already used by a Transformers config" (4.53.3
+    # imports, 4.54.0 does not). vllm declares only a floor (>=4.51.1), so
+    # without this cap both the lock and a plain pip install pick 4.57.x.
+    # Core pins 4.51.3 next to the same vllm. The hf_predict backend is
+    # unaffected and does run on transformers 5.x.
+    "transformers>=4.51.1,<4.54",
+    # >=3.0: same pyarrow-compatibility floor as bert-cola above.
+    "datasets>=3.0",
+]
+
 [dependency-groups]
 # Unit tests exercise pure-Python/torch logic (transform specs, feature
 # derivation, the Lightning model) directly, without spinning up Ray -- see
@@ -215,6 +271,26 @@ amazon-books-qwen = [
 # since it's never needed at runtime.
 dev = [
     "pytest>=8",
+]
+
+[tool.uv]
+# vllm==0.9.2 hard-pins torch==2.7.0 (plus matching torchvision/torchaudio/
+# triton). uv.lock is one universal resolution across every extras group,
+# so without these declarations that exact pin would drag torch (and
+# numpy) down to vLLM's versions for every other project's locked
+# environment too. Declaring llm-prediction-vllm as conflicting with each
+# other extras group lets uv resolve it in its own fork instead. The only
+# cost: `uv sync --extra llm-prediction-vllm --extra <other>` is rejected;
+# each project is meant to be installed (and imaged) on its own anyway.
+# Any new extras group added above needs its own row here too.
+conflicts = [
+    [{ extra = "llm-prediction-vllm" }, { extra = "california-housing" }],
+    [{ extra = "llm-prediction-vllm" }, { extra = "bert-cola" }],
+    [{ extra = "llm-prediction-vllm" }, { extra = "gpt-oss-20b-finetune" }],
+    [{ extra = "llm-prediction-vllm" }, { extra = "movielens" }],
+    [{ extra = "llm-prediction-vllm" }, { extra = "nomic-ai" }],
+    [{ extra = "llm-prediction-vllm" }, { extra = "amazon-books-qwen" }],
+    [{ extra = "llm-prediction-vllm" }, { extra = "llm-prediction" }],
 ]
 
 [build-system]

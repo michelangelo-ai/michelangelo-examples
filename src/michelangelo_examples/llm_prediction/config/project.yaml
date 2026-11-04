@@ -1,0 +1,16 @@
+apiVersion: michelangelo.api/v2
+kind: Project
+metadata:
+  name: llm-prediction
+  namespace: llm-prediction
+spec:
+  description: "Michelangelo LLM Batch Prediction Example"
+  owner:
+    owningTeam: "00000000-0000-0000-0000-000000000001"
+    owners:
+      - michelangelo-example
+    ownerGroups:
+      - michelangelo-example
+  tier: 4
+  gitRepo: https://github.com/michelangelo-ai/michelangelo-examples
+  rootDir: src/michelangelo_examples/llm_prediction
