@@ -49,10 +49,10 @@ def load_data(
     Returns:
         Ray Dataset with renamed prediction column.
     """
-    hf_dataset = datasets.load_dataset(path=path, name=name)
+    hf_dataset = datasets.load_dataset(path=path, name=name, split=data_slice)
     hf_dataset = hf_dataset.rename_column(predict_column, "text")
     if limit:
-        hf_dataset = hf_dataset[data_slice].select(range(limit))
+        hf_dataset = hf_dataset.select(range(limit))
     return ray.data.from_huggingface(hf_dataset)
 
 

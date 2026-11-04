@@ -32,8 +32,7 @@ Once an example has landed here, its copy in core is removed by a follow-up
 cleanup PR. Core keeps only the examples and Dockerfiles its own CI and docs
 depend on: `bert_cola` (used by core's integration tests), `config`,
 `evaluator`, `model_manager`, `workflow_patterns`, `pipelines/scala_test`,
-and the example Dockerfiles/entrypoint. `llm_prediction` also remains in
-core until its own migration lands.
+and the example Dockerfiles/entrypoint.
 
 ## Examples
 

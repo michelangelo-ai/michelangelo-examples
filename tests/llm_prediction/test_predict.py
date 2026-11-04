@@ -25,6 +25,7 @@ _PIPELINES = "michelangelo_examples.llm_prediction.pipelines"
 
 
 def test_hf_predictor_returns_prompt_and_generated_text(monkeypatch):
+    pytest.importorskip("transformers")
     predict_mod = importlib.import_module(f"{_PIPELINES}.hf_predict.predict")
     calls = []
 
@@ -45,7 +46,7 @@ def test_hf_predictor_returns_prompt_and_generated_text(monkeypatch):
     result = predictor({"text": np.array(["a", "b"])})
 
     assert result == {"prompt": ["a", "b"], "generated_text": ["a -> out", "b -> out"]}
-    assert calls[0]["max_length"] == 16
+    assert calls[0]["max_new_tokens"] == 16
     assert calls[0]["temperature"] == 0.5
     assert calls[0]["top_p"] == 0.9
 

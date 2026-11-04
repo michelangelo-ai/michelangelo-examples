@@ -42,6 +42,18 @@ pip install "michelangelo-examples[llm-prediction-vllm]"
 python -m michelangelo_examples.llm_prediction.pipelines.vllm_predict
 ```
 
+Run remotely (in a sandbox or cluster) by passing `remote-run` to either
+entry point, with the project's image and a storage URL:
+
+```bash
+python -m michelangelo_examples.llm_prediction.pipelines.hf_predict \
+  remote-run --storage-url <STORAGE_URL> --image <IMAGE>
+```
+
+(`<IMAGE>` is the `llm-prediction` image built by this repo's CI; the vLLM
+backend has no published image. This path has not been exercised in a
+sandbox yet.)
+
 Install each backend's extra on its own. If you use `uv sync` against this
 repo's lockfile, `llm-prediction-vllm` can't be combined with any other
 extra: `vllm==0.9.2` pins `torch==2.7.0`, so it gets its own resolution.

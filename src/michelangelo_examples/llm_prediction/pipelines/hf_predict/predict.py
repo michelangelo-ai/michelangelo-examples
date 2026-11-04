@@ -66,7 +66,7 @@ class HFPredictor:
         generated_text: list[str] = [
             self.generator(
                 p,
-                max_length=self.max_tokens,
+                max_new_tokens=self.max_tokens,
                 temperature=self.temperature,
                 top_p=self.top_p,
                 num_return_sequences=1,

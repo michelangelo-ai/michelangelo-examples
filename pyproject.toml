@@ -252,12 +252,14 @@ llm-prediction-vllm = [
     # ==0.9.2: matches core michelangelo's own vllm pin. vllm pins its own
     # torch/torchvision/torchaudio versions, so those aren't repeated here.
     "vllm==0.9.2; python_version < '3.13'",
-    # <5: vllm 0.9.2 predates transformers 5.x and declares only a floor
-    # (>=4.51.1), so an unlocked pip install would otherwise pick 5.x.
-    # Locked/expected to run on 4.57.x; this backend has not been run
-    # against 5.x (it needs a CUDA GPU). The hf_predict backend is
+    # <4.54: vllm 0.9.2 registers its own "aimv2" config, and transformers
+    # 4.54.0 added one under the same name, so `from vllm import LLM` fails
+    # with "'aimv2' is already used by a Transformers config" (4.53.3
+    # imports, 4.54.0 does not). vllm declares only a floor (>=4.51.1), so
+    # without this cap both the lock and a plain pip install pick 4.57.x.
+    # Core pins 4.51.3 next to the same vllm. The hf_predict backend is
     # unaffected and does run on transformers 5.x.
-    "transformers>=4.51.1,<5",
+    "transformers>=4.51.1,<4.54",
     # >=3.0: same pyarrow-compatibility floor as bert-cola above.
     "datasets>=3.0",
 ]
