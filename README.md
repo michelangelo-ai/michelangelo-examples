@@ -14,21 +14,26 @@ pip install michelangelo-examples[<example-name>]
 
 ## Why this repo
 
-The full example pipelines in
+Michelangelo's example pipelines started out in
 [`michelangelo/python/examples/`](https://github.com/michelangelo-ai/michelangelo/tree/main/python/examples)
-are the canonical, full-fidelity reference — they exercise real
-Cadence/Temporal orchestration, Spark, and a live sandbox, and they aren't
-going anywhere. But trying one today means checking out the whole monorepo
-and installing one heavyweight extra that bundles every example's
-dependencies (`torch`, `transformers`, `xgboost`, `pyspark`, `ray`,
-`mlflow`, `peft`, and more) at once, regardless of which example you
-actually want.
+and are moving here as standalone, per-use-case projects. Trying one from
+core means checking out the whole monorepo and installing one heavyweight
+extra that bundles every example's dependencies (`torch`, `transformers`,
+`xgboost`, `pyspark`, `ray`, `mlflow`, `peft`, and more) at once,
+regardless of which example you actually want.
 
-`michelangelo-examples` is a second, lighter tier: each example is its own
-pip extra with only the dependencies it needs, plus a plain-Python
-`run_local.py` entrypoint that trains/evaluates locally — no Cadence, no
-Spark, no sandbox. It's the "try it in five minutes" path underneath the
-full pipeline reference, not a replacement for it.
+In `michelangelo-examples`, each example is its own pip extra with only the
+dependencies it needs, and its own image build. Examples that have a
+plain-Python `__main__.py` local runner can also train/evaluate locally — no
+Cadence, no Spark, no sandbox — for a "try it in five minutes" path; others
+(e.g. `amazon_books_qwen`) are Uniflow-only and run against a sandbox.
+
+Once an example has landed here, its copy in core is removed by a follow-up
+cleanup PR. Core keeps only the examples and Dockerfiles its own CI and docs
+depend on: `bert_cola` (used by core's integration tests), `config`,
+`evaluator`, `model_manager`, `workflow_patterns`, `pipelines/scala_test`,
+and the example Dockerfiles/entrypoint. `llm_prediction` also remains in
+core until its own migration lands.
 
 ## Examples
 
@@ -101,8 +106,9 @@ own README — e.g.
 ## Relationship to other Michelangelo repos
 
 - [`michelangelo`](https://github.com/michelangelo-ai/michelangelo) — the
-  core platform; `python/examples/` there remains the full pipeline
-  reference (Cadence/Temporal/Spark/sandbox).
+  core platform; its `python/examples/` keeps only the
+  examples that core's own CI and docs depend on (e.g. `bert_cola`);
+  other examples have moved here.
 - [`michelangelo-models`](https://github.com/michelangelo-ai/michelangelo-models) —
   pluggable model architecture definitions. Some examples here may import
   a seed architecture from there instead of defining their own model.
