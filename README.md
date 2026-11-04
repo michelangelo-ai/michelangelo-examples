@@ -70,6 +70,12 @@ Ported so far:
   Qwen-based dual-encoder recommendation on Amazon Books with Chronon
   feature engineering and Ray training. Uniflow-only (no local runner).
   Requires Python 3.11+ and Kaggle API credentials.
+- [`llm_prediction`](src/michelangelo_examples/llm_prediction/) — offline
+  batch LLM inference over a HuggingFace dataset on Ray, with two sibling
+  pipelines: `hf_predict` (HuggingFace Transformers, CPU or GPU) and
+  `vllm_predict` (vLLM, CUDA GPU only), migrated from core `michelangelo`'s
+  `python/examples/llm_prediction/`. Requires Python 3.11+ (see that
+  project's own README).
 
 See the
 [project spec](https://github.com/michelangelo-ai/michelangelo/tree/main/python/examples)

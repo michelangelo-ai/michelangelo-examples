@@ -51,6 +51,8 @@ jobs:
             python_version: "3.11.11"
           - project: amazon-books-qwen
             python_version: "3.11.11"
+          - project: llm-prediction
+            python_version: "3.11.11"
 
     steps:
       - name: Check out repository
