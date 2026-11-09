@@ -66,8 +66,16 @@ ENV SPARK_VERSION=4.2.0
 ENV HADOOP_VERSION=3
 ENV SPARK_HOME=/opt/spark
 
-RUN curl -L https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz \
-  | tar -xz -C /opt && \
+# archive.apache.org is the only host that keeps Spark releases that are no longer
+# current, and it has been dropping connections from CI runners (connect timeouts
+# and resets, which failed the image build). Retry, fail fast on a stalled connection,
+# and download to a file first: retrying into a pipe would feed duplicate bytes to tar.
+RUN curl -fsSL --retry 5 --retry-all-errors --retry-delay 10 \
+    --connect-timeout 30 --speed-limit 10000 --speed-time 60 \
+    -o /tmp/spark.tgz \
+    https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz && \
+  tar -xz -C /opt -f /tmp/spark.tgz && \
+  rm -f /tmp/spark.tgz && \
   ln -s /opt/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION} ${SPARK_HOME}
 
 ENV PATH="${SPARK_HOME}/bin:${SPARK_HOME}/sbin:${PATH}"
