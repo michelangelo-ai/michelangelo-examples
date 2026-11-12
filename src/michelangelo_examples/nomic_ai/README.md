@@ -32,6 +32,9 @@ on 3.10 is unaffected.
 ## Layout
 
 - `config/project.yaml` -- this project's Michelangelo Project CRD config.
+- `config/localqueue.yaml` -- this project's reference Kueue LocalQueue. Apply it with
+  `kubectl --context <compute-cluster> apply -f src/michelangelo_examples/nomic_ai/config/localqueue.yaml`
+  on each Kueue-managed compute cluster the project runs on; see the file's header.
 - `pipelines/train/` -- data, model, and training code, plus a
   `__main__.py` local runner and its own `README.md`. These ship as real
   package contents -- `pip install` gets the code and `README.md` together,

@@ -28,6 +28,9 @@ the `train` pipeline's README) for how to deploy a trained model.
 ## Layout
 
 - `config/project.yaml` -- this project's Michelangelo Project CRD config.
+- `config/localqueue.yaml` -- this project's reference Kueue LocalQueue. Apply it with
+  `kubectl --context <compute-cluster> apply -f src/michelangelo_examples/bert_cola/config/localqueue.yaml`
+  on each Kueue-managed compute cluster the project runs on; see the file's header.
 - `pipelines/<pipeline-name>/` -- one directory per pipeline: model,
   training, and pipeline-task code, this pipeline's `pipeline.yaml`, and
   its own `README.md`. These ship as real package contents -- `pip
