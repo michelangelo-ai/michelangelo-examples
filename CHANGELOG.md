@@ -2,6 +2,65 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.8.0] - 2026-11-09
+
+
+### Bug Fixes
+
+
+- **california-housing:** Fall back when OSS can't fuse the native transform (#86)
+
+
+- **docker:** Retry the Spark download in the image build (#95)
+
+
+
+### CI/CD
+
+
+- Bump release-drafter/release-drafter from 7.7.0 to 7.9.0 in the actions-minor-and-patch group (#79)
+
+
+- Bump release-drafter/release-drafter from 7.9.0 to 7.10.0 in the actions-minor-and-patch group across 1 directory (#87)
+
+
+
+### Documentation
+
+
+- Update CHANGELOG.md for v0.7.0 (#83)
+
+
+- Update README for core examples split (#91)
+
+
+
+### Features
+
+
+- **california-housing:** Fold native-transform into pytorch_train (#61)
+
+
+- **amazon-books-qwen:** Migrate example from core to michelangelo-examples (#84)
+
+
+
+### Miscellaneous
+
+
+- **deps:** Bump mlflow from 2.22.5 to 3.16.1 (#73)
+
+
+- **deps:** Bump the uv-minor-and-patch group across 1 directory with 2 updates (#80)
+
+
+- Bump michelangelo floor to 0.13.0 (#93)
+
+
+- Release 0.8.0 (#94)
+
+
+
 ## [0.7.0] - 2026-10-05
 
 
